@@ -164,11 +164,11 @@
   <div class="kicker">Infra requirements · Sizing</div>
   <h1>Baseline to start with</h1>
   <div class="grid g3">
-    <div class="card"><h2>Pilot / training</h2><p class="big">1–2 nodes</p><ul><li>1 × e2-standard-2 (template default)</li><li>API 1–2, Worker 1, <code>Recreate</code> strategy</li><li>DB 2 vCPU / 3.75 GB, zonal</li><li>A few facilities</li></ul></div>
-    <div class="card t"><h2>Standard state rollout</h2><p class="big">3–4 nodes</p><ul><li>e2-standard-2 pool</li><li>API 2→4, Worker 1→2</li><li>DB 2 vCPU / 3.75 GB + 1 read replica</li><li>Where most live instances sit</li></ul></div>
-    <div class="card"><h2>Large / multi-module</h2><p class="big">5+ nodes</p><ul><li>DICOM, many plugs, heavy analytics</li><li>HPA on API and Worker</li><li>Bigger DB tier, <code>REGIONAL</code> HA</li><li>Scale on measured load</li></ul></div>
+    <div class="card"><h2>Pilot / training</h2><p class="big">1 node</p><ul><li>Single-node cluster: 2 vCPU / 8 GB</li><li>Use the minimum resources in <a href="https://github.com/egovhealthcare/gcp_template/blob/HEAD/environments/sample.tfvars" target="_blank" rel="noopener"><code>sample.tfvars</code></a></li><li>1 copy of each service</li><li>Database: 2 vCPU / 3.75 GB</li></ul></div>
+    <div class="card t"><h2>Standard state rollout</h2><p class="big">~10 vCPU · 40 GB</p><ul><li>Total for the whole instance, database included</li><li>2–4 API copies, 1–2 workers</li><li>Database + 1 read replica</li><li>Where most live instances run</li></ul></div>
+    <div class="card"><h2>Large / multi-module</h2><p class="big">13+ vCPU · 48+ GB</p><ul><li>DICOM, many plugs, heavy analytics</li><li>Autoscaling on API and workers</li><li>Bigger database, high availability</li><li>Scale on measured load</li></ul></div>
   </div>
-  <p class="src">Grow on signals, not facility count alone: API CPU, Celery queue depth, DB CPU/connections, node memory.</p>
+  <p class="src">These are the defaults we ship and they work in most cases. You are free to change node size and per-component resources to fit your load.</p>
 </section>
 
 <!-- 10 -->
