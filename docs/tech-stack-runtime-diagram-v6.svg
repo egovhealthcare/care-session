@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <style>
+      text{font-family:'Inter','Helvetica Neue',Arial,sans-serif}
+      .title{font-size:34px;font-weight:800;fill:#0F172A}
+      .sub{font-size:18px;fill:#475569}
+      .h{font-size:24px;font-weight:700;fill:#0F172A}
+      .d{font-size:16px;fill:#475569}
+      .lt{font-size:15px;font-weight:700;fill:#0F766E}
+      .lo{font-size:15px;font-weight:700;fill:#C2410C}
+      .lg{font-size:16px;fill:#334155}
+      .note{font-size:15px;fill:#475569}
+      .live{stroke:#0F766E;stroke-width:3;fill:none}
+      .job{stroke:#C2410C;stroke-width:3;fill:none;stroke-dasharray:9 6}
+    </style>
+    <marker id="t" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#0F766E"/></marker>
+    <marker id="o" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L12,6 L0,12 z" fill="#C2410C"/></marker>
+  </defs>
+
+  <rect width="1600" height="900" fill="#F8FAFC"/>
+
+  <text x="64" y="60" class="title">CARE — How the components talk</text>
+  <text x="64" y="94" class="sub">Top: user requests · Bottom: background jobs · Right: data stores</text>
+
+  <!-- ===== arrows (drawn first, boxes on top) ===== -->
+  <!-- Browser -> Frontend -->
+  <polyline class="live" points="720,220 720,262 340,262 340,296" marker-end="url(#t)"/>
+  <text x="530" y="252" text-anchor="middle" class="lt">loads UI (HTML/JS)</text>
+  <!-- Browser -> Backend -->
+  <line class="live" x1="840" y1="220" x2="840" y2="296" marker-end="url(#t)"/>
+  <text x="856" y="256" class="lt">API calls + get signed URL</text>
+  <!-- Backend <-> PostgreSQL -->
+  <line class="live" x1="954" y1="340" x2="1116" y2="340" marker-start="url(#t)" marker-end="url(#t)"/>
+  <text x="1035" y="328" text-anchor="middle" class="lt">read / write</text>
+  <!-- Browser <-> Object Storage (direct, signed URL) -->
+  <polyline class="live" points="954,160 1500,160 1500,565 1444,565" marker-start="url(#t)" marker-end="url(#t)"/>
+  <text x="1227" y="148" text-anchor="middle" class="lt">direct file upload / download (signed URL)</text>
+
+  <!-- Backend <-> Redis -->
+  <line class="job" x1="800" y1="414" x2="800" y2="506" marker-start="url(#o)" marker-end="url(#o)"/>
+  <text x="816" y="466" class="lo">cache + queue jobs</text>
+  <!-- Beat -> Redis -->
+  <line class="job" x1="500" y1="565" x2="646" y2="565" marker-end="url(#o)"/>
+  <text x="573" y="553" text-anchor="middle" class="lo">schedule jobs</text>
+  <!-- Redis -> Worker -->
+  <line class="job" x1="800" y1="620" x2="800" y2="716" marker-end="url(#o)"/>
+  <text x="816" y="674" class="lo">deliver jobs</text>
+  <!-- Worker <-> PostgreSQL -->
+  <polyline class="job" points="954,752 1035,752 1035,385 1116,385" marker-start="url(#o)" marker-end="url(#o)"/>
+  <text x="1024" y="570" text-anchor="middle" class="lo" transform="rotate(-90 1024 570)">read / write</text>
+  <!-- Worker <-> Object Storage -->
+  <polyline class="job" points="954,800 1280,800 1280,624" marker-start="url(#o)" marker-end="url(#o)"/>
+  <text x="1160" y="788" text-anchor="middle" class="lo">files</text>
+
+  <!-- ===== boxes ===== -->
+  <g>
+    <rect x="650" y="130" width="300" height="90" rx="16" fill="#FFFFFF" stroke="#64748B" stroke-width="2.5"/>
+    <text x="800" y="168" text-anchor="middle" class="h">Browser</text>
+    <text x="800" y="196" text-anchor="middle" class="d">Doctors, nurses, admins</text>
+
+    <rect x="180" y="300" width="320" height="110" rx="16" fill="#ECFEFF" stroke="#0E7490" stroke-width="2.5"/>
+    <text x="340" y="348" text-anchor="middle" class="h">Frontend</text>
+    <text x="340" y="378" text-anchor="middle" class="d">React static files · Nginx</text>
+
+    <rect x="650" y="300" width="300" height="110" rx="16" fill="#F0FDF4" stroke="#15803D" stroke-width="2.5"/>
+    <text x="800" y="348" text-anchor="middle" class="h">Backend API</text>
+    <text x="800" y="378" text-anchor="middle" class="d">Django</text>
+
+    <rect x="1120" y="300" width="320" height="110" rx="16" fill="#F5F3FF" stroke="#6D28D9" stroke-width="2.5"/>
+    <text x="1280" y="348" text-anchor="middle" class="h">PostgreSQL</text>
+    <text x="1280" y="378" text-anchor="middle" class="d">Patient + app records</text>
+
+    <rect x="180" y="510" width="320" height="110" rx="16" fill="#FDF4FF" stroke="#A21CAF" stroke-width="2.5"/>
+    <text x="340" y="558" text-anchor="middle" class="h">Celery Beat</text>
+    <text x="340" y="588" text-anchor="middle" class="d">Scheduler · 1 replica only</text>
+
+    <rect x="650" y="510" width="300" height="110" rx="16" fill="#FFF7ED" stroke="#EA580C" stroke-width="2.5"/>
+    <text x="800" y="558" text-anchor="middle" class="h">Redis</text>
+    <text x="800" y="588" text-anchor="middle" class="d">Cache + job queue</text>
+
+    <rect x="1120" y="510" width="320" height="110" rx="16" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2.5"/>
+    <text x="1280" y="558" text-anchor="middle" class="h">Object Storage</text>
+    <text x="1280" y="588" text-anchor="middle" class="d">Uploaded files (S3 / GCS)</text>
+
+    <rect x="650" y="720" width="300" height="110" rx="16" fill="#FFF1F2" stroke="#BE123C" stroke-width="2.5"/>
+    <text x="800" y="768" text-anchor="middle" class="h">Celery Worker</text>
+    <text x="800" y="798" text-anchor="middle" class="d">Runs background jobs</text>
+  </g>
+
+  <!-- legend -->
+  <line class="live" x1="64" y1="740" x2="140" y2="740" marker-end="url(#t)"/>
+  <text x="156" y="746" class="lg">User request (live)</text>
+  <line class="job" x1="64" y1="780" x2="140" y2="780" marker-end="url(#o)"/>
+  <text x="156" y="786" class="lg">Background job</text>
+
+  <text x="64" y="866" class="note">Frontend only serves static files — the browser calls the Backend API directly. File bytes never pass through the backend: the API returns a pre-signed URL</text>
+  <text x="64" y="888" class="note">and the browser uploads / downloads straight to storage. Beat also runs DB migrations on startup.</text>
+</svg>

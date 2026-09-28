@@ -76,7 +76,7 @@
 <section class="slide">
   <div class="kicker">Infra requirements · Tech stack</div>
   <h1>How the pieces talk to each other</h1>
-  <div class="diagram"><img src="tech-stack-runtime-diagram-v5.svg" alt="CARE runtime diagram"></div>
+  <div class="diagram"><img src="tech-stack-runtime-diagram-v6.svg" alt="CARE runtime diagram"></div>
   <p class="src">Browser loads the React bundle from Nginx, then calls the Django API. For files, the API returns a pre-signed URL and the browser uploads/downloads directly to object storage — file bytes never pass through the backend. Celery workers read/write storage directly. Beat is the single scheduler.</p>
 </section>
 
