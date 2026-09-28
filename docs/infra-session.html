@@ -101,7 +101,7 @@
   <div class="grid g3">
     <div class="card t"><h2>Cloud</h2><ul><li>Deployed on <b>GCP, AWS, DigitalOcean</b></li><li>Official path: <b>GKE</b> + Cloud SQL + GCS via <a href="https://github.com/egovhealthcare/gcp_template" target="_blank" rel="noopener"><code>gcp_template</code></a></li><li>AWS example: ECS + Aurora PostgreSQL + ElastiCache + S3 via <a href="https://github.com/ohcnetwork/care-ecs-tofu" target="_blank" rel="noopener"><code>care-ecs-tofu</code></a></li><li>Managed DB / storage recommended</li></ul></div>
     <div class="card"><h2>On-premise</h2><ul><li>Same images on a hospital / state server</li><li>Docker Compose (like this workshop) or self-managed Kubernetes</li><li>You own backups, patching, TLS</li></ul></div>
-    <div class="card"><h2>Connectivity</h2><ul><li>Users reach FE + API over HTTPS</li><li>DB and Redis stay private — never public</li><li>Outbound internet for plugs (ABDM, SMS, email) and image pulls</li></ul></div>
+    <div class="card"><h2>Connectivity</h2><ul><li>Users reach FE + API over HTTPS</li><li>DB and Redis stay private — never public</li><li>Outbound internet for plugs (ABDM, SMS, email) and image pulls</li><li>On GCP, outbound traffic leaves via Cloud NAT with a static IP — easy to allow-list with ABDM and partners</li></ul></div>
   </div>
   <div class="flow" style="margin-top:26px">
     <div class="step">Docker<small>docker compose</small></div><div class="arr">→</div>
