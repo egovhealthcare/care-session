@@ -165,7 +165,7 @@ make deploy</pre>
   <div class="kicker">Infra requirements · Sizing &amp; cost</div>
   <h1>Baseline to start with</h1>
   <div class="grid g3">
-    <div class="card"><h2>Pilot / training</h2><p class="big">1 node · ~$230/mo</p><ul><li>Single-node cluster: 2 vCPU / 8 GB</li><li>Use the minimum resources in <a href="https://github.com/egovhealthcare/gcp_template/blob/HEAD/environments/sample.tfvars" target="_blank" rel="noopener"><code>sample.tfvars</code></a></li><li>1 copy of each service</li><li>Database: 2 vCPU / 3.75 GB, no replica</li><li>Cost based on our TeleICU staging</li></ul></div>
+    <div class="card"><h2>Pilot</h2><p class="big">1 node · ~$230/mo</p><ul><li>Single-node cluster: 2 vCPU / 8 GB</li><li>Use the minimum resources in <a href="https://github.com/egovhealthcare/gcp_template/blob/HEAD/environments/sample.tfvars" target="_blank" rel="noopener"><code>sample.tfvars</code></a></li><li>1 copy of each service</li><li>Database: 2 vCPU / 3.75 GB, no replica</li><li>Cost based on our TeleICU staging</li></ul></div>
     <div class="card t"><h2>District rollout</h2><p class="big">~10 vCPU · 40 GB · ~$400–600/mo</p><ul><li>Total for the whole instance, database included</li><li>2–4 API copies, 1–2 workers</li><li>Database + 1 read replica</li><li>Where most live instances run</li></ul></div>
     <div class="card"><h2>Large deployment</h2><p class="big">Scaled on real usage</p><ul><li>Grow from the district setup based on how users actually use the platform</li><li>Autoscaling on API and workers</li><li>Add nodes, database size or high availability when metrics show the need</li><li>Cost grows with the resources you add</li></ul></div>
   </div>
