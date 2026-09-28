@@ -224,16 +224,16 @@
   <div class="kicker">Environment setup · Production</div>
   <h1>Production: an approved copy of staging</h1>
   <div class="flow">
-    <div class="step">develop<small>weekly changes</small></div><div class="arr">→</div>
+    <div class="step"><code>develop</code><small>weekly changes</small></div><div class="arr">→</div>
     <div class="step">Staging<small>tested by stakeholders</small></div><div class="arr">→</div>
     <div class="step">Sign-off<small>same commits</small></div><div class="arr">→</div>
-    <div class="step">production branch<small>promoted</small></div><div class="arr">→</div>
+    <div class="step"><code>production</code> branch<small>promoted</small></div><div class="arr">→</div>
     <div class="step">All HMIS instances<small>one deploy run</small></div>
   </div>
-  <div class="grid g3" style="margin-top:10px">
-    <div class="card t"><h2>Weekly release</h2><p>All main changes land on staging first every week.</p></div>
-    <div class="card t"><h2>Git is the truth</h2><p>Prod gets the exact commits verified on staging — no hand edits, no drift.</p></div>
-    <div class="card t"><h2>One rollout</h2><p>The <code>production</code> deploy option fans out to every env with <code>TF_VAR_env_name = production</code>. Deploys are serialized per env.</p></div>
+  <div class="grid g3" style="margin-top:22px">
+    <div class="card t"><h2>Two branches, one codebase</h2><ul><li>Staging builds <code>care</code> and <code>care_fe</code> from <code>develop</code></li><li>Every production instance builds from the <code>production</code> branch</li><li>Set per environment in <code>build_config.json</code> (<a href="https://github.com/egovhealthcare/auto-deploy-states/tree/HEAD/env" target="_blank" rel="noopener">env/</a>)</li><li>Promotion = move the tested commits from <code>develop</code> to <code>production</code></li></ul></div>
+    <div class="card t"><h2>One run, every instance</h2><ul><li>Deploy option <code>production</code> picks every environment marked as production in its config</li><li>Each instance gets its own plan and its own approval issue</li><li>One failing instance does not stop the others</li><li>Only one deploy at a time per instance</li></ul></div>
+    <div class="card"><h2>Guard rails</h2><ul><li>Pull requests are checked for valid config (<a href="https://github.com/egovhealthcare/auto-deploy-states/blob/HEAD/.github/workflows/validate.yaml" target="_blank" rel="noopener">validate.yaml</a>)</li><li>Deploy stops if the image tag does not exist</li><li>Only named approvers can approve; no answer in 45 min cancels</li><li>Rollback: deploy again with the previous image tag</li></ul></div>
   </div>
 </section>
 
