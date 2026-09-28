@@ -162,14 +162,15 @@ make deploy</pre>
 
 <!-- 7 -->
 <section class="slide">
-  <div class="kicker">Infra requirements · Sizing</div>
+  <div class="kicker">Infra requirements · Sizing &amp; cost</div>
   <h1>Baseline to start with</h1>
   <div class="grid g3">
-    <div class="card"><h2>Pilot / training</h2><p class="big">1 node</p><ul><li>Single-node cluster: 2 vCPU / 8 GB</li><li>Use the minimum resources in <a href="https://github.com/egovhealthcare/gcp_template/blob/HEAD/environments/sample.tfvars" target="_blank" rel="noopener"><code>sample.tfvars</code></a></li><li>1 copy of each service</li><li>Database: 2 vCPU / 3.75 GB</li></ul></div>
-    <div class="card t"><h2>Standard state rollout</h2><p class="big">~10 vCPU · 40 GB</p><ul><li>Total for the whole instance, database included</li><li>2–4 API copies, 1–2 workers</li><li>Database + 1 read replica</li><li>Where most live instances run</li></ul></div>
-    <div class="card"><h2>Large / multi-module</h2><p class="big">13+ vCPU · 48+ GB</p><ul><li>DICOM, many plugs, heavy analytics</li><li>Autoscaling on API and workers</li><li>Bigger database, high availability</li><li>Scale on measured load</li></ul></div>
+    <div class="card"><h2>Pilot / training</h2><p class="big">1 node · ~$230/mo</p><ul><li>Single-node cluster: 2 vCPU / 8 GB</li><li>Use the minimum resources in <a href="https://github.com/egovhealthcare/gcp_template/blob/HEAD/environments/sample.tfvars" target="_blank" rel="noopener"><code>sample.tfvars</code></a></li><li>1 copy of each service</li><li>Database: 2 vCPU / 3.75 GB, no replica</li><li>Cost based on our TeleICU staging</li></ul></div>
+    <div class="card t"><h2>District rollout</h2><p class="big">~10 vCPU · 40 GB · ~$400–600/mo</p><ul><li>Total for the whole instance, database included</li><li>2–4 API copies, 1–2 workers</li><li>Database + 1 read replica</li><li>Where most live instances run</li></ul></div>
+    <div class="card"><h2>Large deployment</h2><p class="big">Scaled on real usage</p><ul><li>Grow from the district setup based on how users actually use the platform</li><li>Autoscaling on API and workers</li><li>Add nodes, database size or high availability when metrics show the need</li><li>Cost grows with the resources you add</li></ul></div>
   </div>
-  <p class="src">These are the defaults we ship and they work in most cases. You are free to change node size and per-component resources to fit your load.</p>
+  <div class="note" style="margin-top:16px"><b>Starting smaller:</b> one node, no read replica (point Metabase at a read-only DB user instead), or skip Metabase entirely.</div>
+  <p class="src">Defaults work in most cases; you are free to change node size and per-component resources. Costs: Google list prices (asia-south1) × provisioned resources, not a billing export.</p>
 </section>
 
 <!-- 9 -->
@@ -195,15 +196,6 @@ make deploy</pre>
 </section>
 
 <!-- 11 -->
-<section class="slide">
-  <div class="kicker">Costing estimations</div>
-  <h1>Monthly cost of one gcp_template instance</h1>
-  <table class="compact"><tr><th>Item</th><th>Small (TeleICU staging)</th><th>State production</th><th>Small / month</th><th>Production / month</th></tr><tr><td>Kubernetes nodes</td><td>1 node · 2 vCPU / 8 GB</td><td>3–5 nodes</td><td>~$65</td><td>~$175 – $295</td></tr><tr><td>Database</td><td>2 vCPU / 3.75 GB, no replica</td><td>2 vCPU / 3.75 GB</td><td>~$95</td><td>~$95</td></tr><tr><td>Database read replica</td><td>—</td><td>1 vCPU / 3.75 GB</td><td>—</td><td>~$60</td></tr><tr><td>Metabase settings DB</td><td>Smallest tier</td><td>Smallest tier</td><td>~$10</td><td>~$10</td></tr><tr><td>Load balancer, NAT, IPs</td><td>Same setup</td><td>Same setup</td><td>~$50</td><td>~$50 – $70</td></tr><tr><td>Storage, logs, backups, traffic</td><td>Low use</td><td>Depends on use</td><td>~$10</td><td>~$20 – $60</td></tr><tr><td><b>Total</b></td><td></td><td></td><td><b>~$230</b></td><td><b>~$400 – $600</b></td></tr></table>
-  <div class="note" style="margin-top:16px"><b>Starting smaller:</b> one node, no read replica (point Metabase at a read-only DB user instead), or skip Metabase entirely. Grow nodes and database only when usage shows it.</div>
-  <p class="src">Estimate from Google list prices (asia-south1) × provisioned resources. Not a billing export.</p>
-</section>
-
-<!-- 12 -->
 <section class="slide">
   <div class="kicker">Environment setup · Staging</div>
   <h1>Staging: configure, test, train</h1>
