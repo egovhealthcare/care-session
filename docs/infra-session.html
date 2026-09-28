@@ -70,6 +70,7 @@
   table.compact{font-size:17px} table.compact td{padding:7px 10px}
   .note{border:1px solid var(--line);border-left:4px solid var(--teal);background:#fff;padding:14px 20px;border-radius:10px;font-size:19px}
 .oss{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:999px;background:var(--teal-soft);color:var(--teal);font-size:.72em;font-weight:600;white-space:nowrap}
+.cmd{background:rgba(0,0,0,.28);color:#D9F99D;font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;padding:12px 14px;border-radius:10px;white-space:pre;overflow:hidden;margin:8px 0 0}
 </style>
 </head>
 <body>
@@ -118,7 +119,13 @@
   <div class="grid g2">
     <div class="card t"><h2>OpenTofu modules — applied in order</h2>
       <ol style="padding-left:26px"><li><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/pre-infra" target="_blank" rel="noopener"><code>pre-infra/</code></a> — APIs, optional DNS zone</li><li><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/KMS" target="_blank" rel="noopener"><code>KMS/</code></a> — key ring &amp; keys</li><li><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/infra" target="_blank" rel="noopener"><code>infra/</code></a> — VPC, GKE, Cloud SQL, GCS, Cloud Armor, GitHub WIF</li><li><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/deploy" target="_blank" rel="noopener"><code>deploy/</code></a> — namespace, secrets, Helm releases</li></ol>
-      <p class="src">tfvars live in Secret Manager as <code>tofu-tfvars-&lt;env&gt;</code>; never in git.</p></div>
+      <p class="src">tfvars live in Secret Manager as <code>tofu-tfvars-&lt;env&gt;</code>; never in git.</p>
+      <h2 style="margin-top:22px">Run in each module folder</h2>
+      <pre class="cmd">make init BACKEND_BUCKET=&lt;state-bucket&gt;
+make pull-tfvars PROJECT_ID=&lt;project&gt; ENV_NAME=&lt;env&gt;
+make plan   PROJECT_ID=&lt;project&gt; ENV_NAME=&lt;env&gt; BACKEND_BUCKET=&lt;state-bucket&gt;
+make deploy PROJECT_ID=&lt;project&gt; ENV_NAME=&lt;env&gt; BACKEND_BUCKET=&lt;state-bucket&gt;</pre>
+      <p class="src">From the <a href="https://github.com/egovhealthcare/gcp_template#common-commands" target="_blank" rel="noopener">gcp_template README</a>.</p></div>
     <div class="card"><h2>Helm charts — what each installs</h2>
       <table class="compact"><tr><td><b><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/care_be" target="_blank" rel="noopener">care_be</a></b></td><td>Backend API, Celery worker, Celery Beat (+ HPAs)</td></tr><tr><td><b><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/care_fe" target="_blank" rel="noopener">care_fe</a></b></td><td>Frontend (Nginx serving the React app)</td></tr><tr><td><b><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/redis" target="_blank" rel="noopener">redis</a></b></td><td>Redis 8 — cache and job queue <span class="oss">open source</span></td></tr><tr><td><b><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/gateway" target="_blank" rel="noopener">gateway</a></b></td><td>Gateway API load balancer, HTTPS, Let's Encrypt certificate</td></tr><tr><td><b><a href="https://github.com/cert-manager/cert-manager" target="_blank" rel="noopener">cert-manager</a></b></td><td>Issues and renews TLS certificates (upstream Jetstack chart) <span class="oss">open source</span></td></tr><tr><td><b><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/metabase" target="_blank" rel="noopener">metabase</a></b></td><td>Metabase analytics dashboards <span class="oss">open source</span></td></tr><tr><td><b><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/care_metrics_exporter" target="_blank" rel="noopener">care_metrics_exporter</a></b></td><td>Exports Celery queue depth to Prometheus</td></tr><tr><td><b><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/dcm4chee" target="_blank" rel="noopener">dcm4chee</a></b></td><td>DICOM server + OHIF viewer (only if <code>enable_dicom</code>) <span class="oss">open source</span></td></tr></table>
       <p class="src"><span class="oss">open source</span> = community projects we package and configure, not built by us.</p></div>
