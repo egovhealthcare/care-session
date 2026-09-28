@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CARE HMIS — Infrastructure & Environments</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#1F6F6B; --teal-2:#2A9D8F; --teal-soft:#E6F4F1; --navy:#16324F;
+    --ink:#1E293B; --muted:#5B6B7B; --line:#D5E3E0; --amber:#C2410C; --bg:#FFFFFF;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:#0f1f1e;font-family:Inter,system-ui,sans-serif;color:var(--ink)}
+  .deck{position:relative;width:100vw;height:100vh;overflow:hidden}
+  .slide{position:absolute;inset:0;margin:auto;width:1600px;height:900px;background:var(--bg);
+    display:none;flex-direction:column;padding:64px 88px 56px;transform-origin:center center}
+  .slide.active{display:flex}
+  .slide::before{content:"";position:absolute;left:0;top:0;bottom:0;width:14px;background:var(--teal)}
+  .kicker{font:700 16px Montserrat;letter-spacing:.18em;text-transform:uppercase;color:var(--teal-2);margin-bottom:10px}
+  h1{font:800 54px/1.1 Montserrat;color:var(--teal);margin-bottom:28px}
+  h2{font:700 24px Montserrat;color:var(--navy);margin-bottom:12px}
+  p,li{font-size:22px;line-height:1.5}
+  ul{padding-left:26px} li{margin:6px 0}
+  .muted{color:var(--muted)}
+  .grid{display:grid;gap:24px;flex:1}
+  .g2{grid-template-columns:1fr 1fr} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+  .card{border:2px solid var(--line);border-radius:18px;padding:24px 26px;background:#fff}
+  .card.t{border-color:var(--teal-2);background:var(--teal-soft)}
+  .card h2{font-size:22px}
+  .card li,.card p{font-size:19px}
+  table{border-collapse:collapse;width:100%;font-size:19px}
+  th{font:700 16px Montserrat;text-transform:uppercase;letter-spacing:.06em;color:#fff;background:var(--teal);text-align:left;padding:12px 14px}
+  td{padding:11px 14px;border-bottom:1px solid var(--line)}
+  tr:nth-child(even) td{background:#F6FBFA}
+  code{font:500 .9em ui-monospace,Menlo,monospace;background:var(--teal-soft);color:var(--teal);padding:2px 7px;border-radius:6px}
+  .foot{position:absolute;left:88px;right:88px;bottom:22px;display:flex;justify-content:space-between;font:600 14px Montserrat;color:var(--muted)}
+  .src{font-size:15px;color:var(--muted);margin-top:14px}
+  .pill{display:inline-block;font:700 15px Montserrat;padding:6px 14px;border-radius:999px;background:var(--teal);color:#fff;margin-right:8px}
+  .pill.o{background:#fff;color:var(--teal);border:2px solid var(--teal)}
+  .flow{display:flex;align-items:center;gap:14px;margin:10px 0 18px}
+  .flow .step{flex:1;text-align:center;border:2px solid var(--teal-2);border-radius:14px;padding:16px 10px;background:var(--teal-soft);font:700 18px Montserrat;color:var(--navy)}
+  .flow .step small{display:block;font:500 15px Inter;color:var(--muted);margin-top:4px}
+  .flow .arr{font:800 30px Montserrat;color:var(--teal)}
+  .big{font:800 44px Montserrat;color:var(--teal)}
+  /* title / closing */
+  .cover{padding:0;flex-direction:row}
+  .cover .l{flex:1.15;padding:120px 96px;display:flex;flex-direction:column;justify-content:center}
+  .cover .r{flex:1;background:var(--teal);color:#fff;padding:120px 80px;display:flex;flex-direction:column;justify-content:center}
+  .cover h1{font-size:76px}
+  .cover .r li{font:600 26px Montserrat;margin:14px 0;list-style:none}
+  .cover .r li::before{content:"— ";opacity:.6}
+  .diagram{flex:1;display:flex;align-items:center;justify-content:center}
+  .diagram img{max-width:100%;max-height:640px}
+  .note{border-left:6px solid var(--amber);background:#FFF7ED;padding:14px 20px;border-radius:8px;font-size:19px}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- 1 -->
+<section class="slide cover">
+  <div class="l">
+    <div class="kicker">CARE HMIS · Session</div>
+    <h1>Infrastructure &amp; Environments</h1>
+    <p class="muted">What it takes to host, size, cost and operate a CARE HMIS instance — based on the <code>care</code>, <code>care_fe</code>, <code>gcp_template</code> and <code>auto-deploy-states</code> repos and live instance measurements.</p>
+  </div>
+  <div class="r"><ul>
+    <li>Tech stack &amp; deployment modes</li><li>Components</li><li>Hardware &amp; sizing</li>
+    <li>Scaling &amp; provisioning checklist</li><li>Cost estimates</li><li>Staging → Production</li><li>Metabase dashboards</li>
+  </ul></div>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+  <div class="kicker">Infra requirements · Tech stack</div>
+  <h1>How the pieces talk to each other</h1>
+  <div class="diagram"><img src="tech-stack-runtime-diagram-v5.svg" alt="CARE runtime diagram"></div>
+  <p class="src">Browser loads the React bundle from Nginx, then calls the Django API. API and workers share PostgreSQL, Redis and object storage. Beat is the single scheduler.</p>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <div class="kicker">Infra requirements · Tech stack</div>
+  <h1>Technology per component</h1>
+  <table>
+    <tr><th>Component</th><th>Technology (from repos)</th><th>Role</th></tr>
+    <tr><td><b>Frontend</b></td><td>React 19 + TypeScript + Vite, built on <code>node:22</code>, served by <code>nginx:stable-alpine</code></td><td>Static SPA</td></tr>
+    <tr><td><b>Backend API</b></td><td>Python 3.13, Django 6.0, DRF, Gunicorn — <code>/app/start.sh</code>, port 9000, health <code>/ping/</code></td><td>REST API</td></tr>
+    <tr><td><b>Celery Worker</b></td><td>Celery 5.6 — same image, <code>/app/celery_worker.sh</code></td><td>Async tasks</td></tr>
+    <tr><td><b>Celery Beat</b></td><td>Same image, <code>/app/celery_beat.sh</code> — runs migrations + syncs, then Beat</td><td>Scheduler (1 replica)</td></tr>
+    <tr><td><b>PostgreSQL</b></td><td>Cloud SQL <code>POSTGRES_17</code>, private IP, PITR, 7 backups</td><td>Primary data</td></tr>
+    <tr><td><b>Redis</b></td><td><code>redis:8-alpine</code> in-cluster</td><td>Cache + Celery broker</td></tr>
+    <tr><td><b>Object storage</b></td><td>S3 API via boto3 → GCS in GCP, any S3-compatible store elsewhere</td><td>Files / uploads</td></tr>
+  </table>
+</section>
+
+<!-- 4 -->
+<section class="slide">
+  <div class="kicker">Infra requirements · Deployment modes</div>
+  <h1>Container-based, runs anywhere</h1>
+  <div class="grid g3">
+    <div class="card t"><h2>☁️ Cloud</h2><ul><li>Deployed on <b>GCP, AWS, DigitalOcean</b></li><li>Official path: <b>GKE</b> + Cloud SQL + GCS via <code>gcp_template</code></li><li>Managed DB / storage recommended</li></ul></div>
+    <div class="card"><h2>🏥 On-premise</h2><ul><li>Same images on a hospital / state server</li><li>Docker Compose (like this workshop) or self-managed Kubernetes</li><li>You own backups, patching, TLS</li></ul></div>
+    <div class="card"><h2>🔌 Connectivity</h2><ul><li>Users reach FE + API over HTTPS</li><li>DB and Redis stay private — never public</li><li>Outbound internet for plugs (ABDM, SMS, email) and image pulls</li></ul></div>
+  </div>
+  <div class="flow" style="margin-top:26px">
+    <div class="step">Docker<small>docker compose</small></div><div class="arr">→</div>
+    <div class="step">Kubernetes<small>Helm charts</small></div><div class="arr">→</div>
+    <div class="step">GKE<small>gcp_template (OpenTofu + Helm)</small></div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="slide">
+  <div class="kicker">Infra requirements · gcp_template</div>
+  <h1>The official GCP blueprint</h1>
+  <div class="grid g2">
+    <div class="card t"><h2>OpenTofu modules — applied in order</h2>
+      <ol style="padding-left:26px"><li><code>pre-infra/</code> — APIs, optional DNS zone</li><li><code>KMS/</code> — key ring &amp; keys</li><li><code>infra/</code> — VPC, GKE, Cloud SQL, GCS, Cloud Armor, GitHub WIF</li><li><code>deploy/</code> — namespace, secrets, Helm releases</li></ol>
+      <p class="src">tfvars live in Secret Manager as <code>tofu-tfvars-&lt;env&gt;</code>; never in git.</p></div>
+    <div class="card"><h2>Helm charts</h2>
+      <p><span class="pill">care_be</span><span class="pill">care_fe</span><span class="pill">redis</span><span class="pill">gateway</span></p>
+      <p style="margin-top:10px"><span class="pill o">metabase</span><span class="pill o">dcm4chee</span><span class="pill o">care_metrics_exporter</span></p>
+      <ul style="margin-top:16px"><li>GKE zonal, STABLE channel, private control plane, Gateway API</li><li>Managed Prometheus + alert when <code>celery</code> queue &gt; 200 for 5 min</li></ul></div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+  <div class="kicker">Infra requirements · Components</div>
+  <h1>Core vs optional components</h1>
+  <div class="grid g4">
+    <div class="card t"><h2>Frontend</h2><p>React SPA on Nginx. Required.</p></div>
+    <div class="card t"><h2>Backend</h2><p>API + Worker + Beat from one image. Required.</p></div>
+    <div class="card t"><h2>PostgreSQL</h2><p>Primary DB (+ read replica on GCP). Required.</p></div>
+    <div class="card t"><h2>Redis + Storage</h2><p>Broker/cache and file store. Required.</p></div>
+    <div class="card"><h2>Metabase</h2><p>Analytics dashboards, own metadata DB. Optional.</p></div>
+    <div class="card"><h2>AI engine</h2><p>Delivered as backend plugs (<code>care_scribe</code>, <code>ambient_scribe</code>) calling an external model API. Optional.</p></div>
+    <div class="card"><h2>DICOM / PACS</h2><p><code>dcm4chee</code> + OHIF viewer, enabled with <code>enable_dicom</code>. Optional.</p></div>
+    <div class="card"><h2>Plugs</h2><p>Installed at build via <code>ADDITIONAL_PLUGS</code> (ABDM, radiology, payments…). Optional.</p></div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="slide">
+  <div class="kicker">Infra requirements · Hardware</div>
+  <h1>Per-component resources</h1>
+  <table>
+    <tr><th>Component</th><th>Chart request</th><th>Chart limit</th><th>Observed in live instances</th></tr>
+    <tr><td><b>Backend API</b> (per pod)</td><td>500m CPU / 1 Gi</td><td>1.5 CPU / 2 Gi</td><td>20–150m CPU · 490–670 Mi</td></tr>
+    <tr><td><b>Celery Worker</b> (per pod)</td><td>500m / 512 Mi</td><td>1.5 CPU / 2 Gi</td><td>3–46m · 220–300 Mi</td></tr>
+    <tr><td><b>Celery Beat</b></td><td>150m / 250 Mi</td><td>250m / 2 Gi</td><td>0–4m · 170–260 Mi</td></tr>
+    <tr><td><b>Frontend</b> (per pod)</td><td>100m / 128 Mi</td><td>200m / 256 Mi</td><td>1m · 3–40 Mi</td></tr>
+    <tr><td><b>Redis</b></td><td>100m / 128 Mi</td><td>500m / 256 Mi</td><td>4–12m · 7–23 Mi</td></tr>
+    <tr><td><b>Metabase</b></td><td>500m / 512 Mi</td><td>1 CPU / 1 Gi</td><td>17–25m · ~1.3–1.4 Gi</td></tr>
+    <tr><td><b>PostgreSQL</b></td><td colspan="2">Cloud SQL <code>db-custom-2-3840</code> (2 vCPU / 3.75 GB), 10–15 GB SSD</td><td>Same tier on every instance</td></tr>
+  </table>
+  <p class="src">Observed: <code>kubectl top</code> snapshot across 4 production instances + staging, Sep 2026. Metabase runs above its chart memory request — plan ~1.5 Gi for it.</p>
+</section>
+
+<!-- 8 -->
+<section class="slide">
+  <div class="kicker">Infra requirements · Sizing</div>
+  <h1>What real instances run today</h1>
+  <table>
+    <tr><th>Instance</th><th>GKE nodes</th><th>API pods</th><th>Workers</th><th>Cloud SQL</th><th>Node usage</th></tr>
+    <tr><td>Staging</td><td>3 × e2-standard-2</td><td>2</td><td>1</td><td>2 vCPU / 3.75 GB + 1-vCPU replica</td><td>7–17% CPU · 39–62% RAM</td></tr>
+    <tr><td>Instance A</td><td>3 × e2-standard-2</td><td>2</td><td>1</td><td>2 vCPU / 3.75 GB + replica</td><td>10–12% CPU · 41–59% RAM</td></tr>
+    <tr><td>Instance B</td><td>5 × e2-standard-2</td><td>4</td><td>2</td><td>2 vCPU / 3.75 GB + replica</td><td>8–10% CPU · 39–56% RAM</td></tr>
+    <tr><td>Instance C (+DICOM)</td><td>4 × e2-standard-2</td><td>4</td><td>2</td><td>2 vCPU / 3.75 GB + replica</td><td>7–21% CPU · 40–64% RAM</td></tr>
+    <tr><td>Instance D</td><td>4 × e2-standard-2</td><td>4</td><td>2 (HPA 2–8)</td><td>2 vCPU / 3.75 GB + replica</td><td>5–13% CPU · 31–63% RAM</td></tr>
+  </table>
+  <div class="note" style="margin-top:22px"><b>Takeaway:</b> every instance fits in 3–5 small nodes (2 vCPU / 8 GB each). Memory, not CPU, decides the node count.</div>
+</section>
+
+<!-- 9 -->
+<section class="slide">
+  <div class="kicker">Infra requirements · Sizing</div>
+  <h1>Baseline to start with</h1>
+  <div class="grid g3">
+    <div class="card"><h2>Pilot / training</h2><p class="big">1–2 nodes</p><ul><li>1 × e2-standard-2 (template default)</li><li>API 1–2, Worker 1, <code>Recreate</code> strategy</li><li>DB 2 vCPU / 3.75 GB, zonal</li><li>A few facilities</li></ul></div>
+    <div class="card t"><h2>Standard state rollout</h2><p class="big">3–4 nodes</p><ul><li>e2-standard-2 pool</li><li>API 2→4, Worker 1→2</li><li>DB 2 vCPU / 3.75 GB + 1 read replica</li><li>Where most live instances sit</li></ul></div>
+    <div class="card"><h2>Large / multi-module</h2><p class="big">5+ nodes</p><ul><li>DICOM, many plugs, heavy analytics</li><li>HPA on API and Worker</li><li>Bigger DB tier, <code>REGIONAL</code> HA</li><li>Scale on measured load</li></ul></div>
+  </div>
+  <p class="src">Grow on signals, not facility count alone: API CPU, Celery queue depth, DB CPU/connections, node memory.</p>
+</section>
+
+<!-- 10 -->
+<section class="slide">
+  <div class="kicker">Scoping &amp; provisioning</div>
+  <h1>Autoscaling with HPA</h1>
+  <div class="grid g2">
+    <div class="card t"><h2>Backend API</h2><ul><li>HPA on CPU, template default 2 → 6 pods at 80%</li><li><code>api_autoscaling_min/max_replicas</code> in <code>helm_config</code></li><li>Scale-down waits 15 min (<code>stabilizationWindowSeconds: 900</code>)</li></ul></div>
+    <div class="card t"><h2>Celery Worker</h2><ul><li>Same HPA pattern, default 2 → 6 at 80%</li><li>Live example: 2 → 8 pods at 60% CPU</li><li>Watch queue depth — the alert fires at &gt; 200 waiting tasks</li></ul></div>
+  </div>
+  <div class="note" style="margin-top:22px">Beat is <b>never</b> scaled — one scheduler only. More replicas multiply requests; check node allocatable before raising the max.</div>
+</section>
+
+<!-- 11 -->
+<section class="slide">
+  <div class="kicker">Scoping &amp; provisioning</div>
+  <h1>Checklist</h1>
+  <div class="grid g2">
+    <div class="card"><h2>Scope</h2><ul><li>Number of facilities, users, go-live phases</li><li>Modules and plugs (ABDM, scribe, DICOM, payments)</li><li>Analytics needed? → Metabase</li><li>Hosting: cloud / on-prem, data residency</li><li>Domains: web, API, Metabase, DICOM</li></ul></div>
+    <div class="card t"><h2>Provision</h2><ul><li>GCP project, billing, state bucket</li><li>tfvars → Secret Manager (<code>tofu-tfvars-&lt;env&gt;</code>)</li><li>Apply pre-infra → KMS → infra → deploy</li><li>Node pool, DB tier, replicas, HPA limits</li><li>DNS + TLS, Cloud Armor, alert emails</li><li>Backups / PITR verified, restore tested</li></ul></div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section class="slide">
+  <div class="kicker">Costing estimations</div>
+  <h1>Monthly cost of one gcp_template instance</h1>
+  <table>
+    <tr><th>Line item</th><th>Typical config</th><th>Est. USD / month</th></tr>
+    <tr><td>GKE nodes</td><td>3–5 × e2-standard-2 (asia-south1)</td><td>~$175 – $295</td></tr>
+    <tr><td>Cloud SQL primary</td><td>db-custom-2-3840, zonal, SSD</td><td>~$95</td></tr>
+    <tr><td>Cloud SQL read replica</td><td>db-custom-1-3840</td><td>~$60</td></tr>
+    <tr><td>Metabase metadata DB</td><td>db-f1-micro</td><td>~$10</td></tr>
+    <tr><td>Load balancer, NAT, static IP</td><td>Regional external ALB + Cloud NAT</td><td>~$50 – $70</td></tr>
+    <tr><td>Storage, logs, backups, egress</td><td>Depends on usage</td><td>~$20 – $60</td></tr>
+    <tr><td><b>Total per instance</b></td><td><b>Staging ≈ low end · large ≈ high end</b></td><td><b>~$400 – $600</b></td></tr>
+  </table>
+  <p class="src">Estimate from Google list prices × the resources actually provisioned (slide 8). Not a billing export — confirm with the GCP pricing calculator / billing reports for your project. GKE zonal cluster fee is covered by the per-billing-account free tier.</p>
+</section>
+
+<!-- 13 -->
+<section class="slide">
+  <div class="kicker">Environment setup · Staging</div>
+  <h1>Staging: configure, test, train</h1>
+  <div class="grid g2">
+    <div class="card t"><h2>Where everything happens first</h2><ul><li>Dedicated GCP project with the full gcp_template stack</li><li>Builds from the <code>develop</code> ref of <code>care</code> / <code>care_fe</code></li><li>New plugs, value sets, roles and config tested here</li><li>Training runs on staging, never production</li></ul></div>
+    <div class="card"><h2>auto-deploy-states repo</h2><ul><li><code>env/&lt;name&gt;/</code>: <code>deploy_config.json</code>, <code>care.env</code>, <code>care_fe.env</code></li><li><b>Build</b> workflow → image <code>latest-&lt;run&gt;</code> in Artifact Registry</li><li><b>Deploy</b> workflow → OpenTofu plan → approval issue → apply</li><li>GitHub → GCP via Workload Identity Federation (no keys)</li></ul></div>
+  </div>
+  <div class="flow" style="margin-top:22px">
+    <div class="step">Edit env config<small>PR to auto-deploy-states</small></div><div class="arr">→</div>
+    <div class="step">Build<small>image tag</small></div><div class="arr">→</div>
+    <div class="step">Plan<small>OpenTofu</small></div><div class="arr">→</div>
+    <div class="step">Approve<small>“approved” comment</small></div><div class="arr">→</div>
+    <div class="step">Apply<small>staging live</small></div>
+  </div>
+</section>
+
+<!-- 14 -->
+<section class="slide">
+  <div class="kicker">Environment setup · Production</div>
+  <h1>Production: an approved copy of staging</h1>
+  <div class="flow">
+    <div class="step">develop<small>weekly changes</small></div><div class="arr">→</div>
+    <div class="step">Staging<small>tested by stakeholders</small></div><div class="arr">→</div>
+    <div class="step">Sign-off<small>same commits</small></div><div class="arr">→</div>
+    <div class="step">production branch<small>promoted</small></div><div class="arr">→</div>
+    <div class="step">All HMIS instances<small>one deploy run</small></div>
+  </div>
+  <div class="grid g3" style="margin-top:10px">
+    <div class="card t"><h2>Weekly release</h2><p>All main changes land on staging first every week.</p></div>
+    <div class="card t"><h2>Git is the truth</h2><p>Prod gets the exact commits verified on staging — no hand edits, no drift.</p></div>
+    <div class="card t"><h2>One rollout</h2><p>The <code>production</code> deploy option fans out to every env with <code>TF_VAR_env_name = production</code>. Deploys are serialized per env.</p></div>
+  </div>
+</section>
+
+<!-- 15 -->
+<section class="slide">
+  <div class="kicker">Environment setup · Metabase</div>
+  <h1>Dashboards with Metabase</h1>
+  <div class="grid g2">
+    <div class="card"><h2>Optional — only for analytics</h2><ul><li>Chart <code>metabase/metabase:v0.63.13</code>, port 3000, health <code>/api/health</code></li><li>Own metadata DB (Cloud SQL <code>db-f1-micro</code>)</li><li>Plan ~1.5 Gi RAM for the pod</li></ul></div>
+    <div class="card t"><h2>Connect to CARE data — two ways</h2><ol style="padding-left:26px"><li><b>Read replica</b> (GCP default): Cloud SQL replica, reporting never loads the primary</li><li><b>Read-only SQL user</b> on the CARE DB — simpler, works anywhere, including on-prem</li></ol></div>
+  </div>
+  <div class="note" style="margin-top:22px">Never give Metabase a read-write user. Prefer the replica for heavy dashboards.</div>
+</section>
+
+<!-- 16 -->
+<section class="slide cover">
+  <div class="l"><div class="kicker">Recap</div><h1>Start small, scale on signals</h1>
+    <p class="muted">3 small nodes + a 2-vCPU Postgres runs a real state HMIS today. Use HPA for API and workers, promote staging → production by commit, and add Metabase only when you need analytics.</p></div>
+  <div class="r"><ul><li>github.com/ohcnetwork/care</li><li>github.com/ohcnetwork/care_fe</li><li>gcp_template</li><li>auto-deploy-states</li></ul></div>
+</section>
+
+</div>
+<script>
+  const s=[...document.querySelectorAll('.slide')];let i=0;
+  s.forEach((el,n)=>{if(!el.classList.contains('cover')){const f=document.createElement('div');f.className='foot';f.innerHTML='<span>CARE HMIS · Infrastructure</span><span>'+(n+1)+' / '+s.length+'</span>';el.appendChild(f);}});
+  function fit(){const k=Math.min(innerWidth/1600,innerHeight/900);s.forEach(e=>e.style.transform='scale('+k+')');}
+  function show(n){i=Math.max(0,Math.min(s.length-1,n));s.forEach((e,j)=>e.classList.toggle('active',j===i));location.hash=i+1;}
+  addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key))show(i+1);if(['ArrowLeft','PageUp'].includes(e.key))show(i-1);});
+  addEventListener('click',e=>show(i+(e.clientX>innerWidth/2?1:-1)));
+  addEventListener('resize',fit);fit();show((parseInt(location.hash.slice(1))||1)-1);
+</script>
+</body>
+</html>
