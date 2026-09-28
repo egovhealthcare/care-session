@@ -53,6 +53,7 @@
   .cover .r li::before{content:"— ";opacity:.6}
   .diagram{flex:1;display:flex;align-items:center;justify-content:center}
   .diagram img{max-width:100%;max-height:640px}
+  a{color:inherit;text-decoration:underline;text-decoration-color:var(--teal-2);text-underline-offset:3px} .cover .r a{color:#fff}
   .note{border-left:6px solid var(--amber);background:#FFF7ED;padding:14px 20px;border-radius:8px;font-size:19px}
 </style>
 </head>
@@ -101,14 +102,14 @@
   <div class="kicker">Infra requirements · Deployment modes</div>
   <h1>Container-based, runs anywhere</h1>
   <div class="grid g3">
-    <div class="card t"><h2>☁️ Cloud</h2><ul><li>Deployed on <b>GCP, AWS, DigitalOcean</b></li><li>Official path: <b>GKE</b> + Cloud SQL + GCS via <code>gcp_template</code></li><li>Managed DB / storage recommended</li></ul></div>
-    <div class="card"><h2>🏥 On-premise</h2><ul><li>Same images on a hospital / state server</li><li>Docker Compose (like this workshop) or self-managed Kubernetes</li><li>You own backups, patching, TLS</li></ul></div>
-    <div class="card"><h2>🔌 Connectivity</h2><ul><li>Users reach FE + API over HTTPS</li><li>DB and Redis stay private — never public</li><li>Outbound internet for plugs (ABDM, SMS, email) and image pulls</li></ul></div>
+    <div class="card t"><h2>Cloud</h2><ul><li>Deployed on <b>GCP, AWS, DigitalOcean</b></li><li>Official path: <b>GKE</b> + Cloud SQL + GCS via <a href="https://github.com/egovhealthcare/gcp_template" target="_blank" rel="noopener"><code>gcp_template</code></a></li><li>Managed DB / storage recommended</li></ul></div>
+    <div class="card"><h2>On-premise</h2><ul><li>Same images on a hospital / state server</li><li>Docker Compose (like this workshop) or self-managed Kubernetes</li><li>You own backups, patching, TLS</li></ul></div>
+    <div class="card"><h2>Connectivity</h2><ul><li>Users reach FE + API over HTTPS</li><li>DB and Redis stay private — never public</li><li>Outbound internet for plugs (ABDM, SMS, email) and image pulls</li></ul></div>
   </div>
   <div class="flow" style="margin-top:26px">
     <div class="step">Docker<small>docker compose</small></div><div class="arr">→</div>
     <div class="step">Kubernetes<small>Helm charts</small></div><div class="arr">→</div>
-    <div class="step">GKE<small>gcp_template (OpenTofu + Helm)</small></div>
+    <div class="step">GKE<small><a href="https://github.com/egovhealthcare/gcp_template" target="_blank" rel="noopener">gcp_template</a> (OpenTofu + Helm)</small></div>
   </div>
 </section>
 
@@ -118,11 +119,11 @@
   <h1>The official GCP blueprint</h1>
   <div class="grid g2">
     <div class="card t"><h2>OpenTofu modules — applied in order</h2>
-      <ol style="padding-left:26px"><li><code>pre-infra/</code> — APIs, optional DNS zone</li><li><code>KMS/</code> — key ring &amp; keys</li><li><code>infra/</code> — VPC, GKE, Cloud SQL, GCS, Cloud Armor, GitHub WIF</li><li><code>deploy/</code> — namespace, secrets, Helm releases</li></ol>
+      <ol style="padding-left:26px"><li><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/pre-infra" target="_blank" rel="noopener"><code>pre-infra/</code></a> — APIs, optional DNS zone</li><li><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/KMS" target="_blank" rel="noopener"><code>KMS/</code></a> — key ring &amp; keys</li><li><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/infra" target="_blank" rel="noopener"><code>infra/</code></a> — VPC, GKE, Cloud SQL, GCS, Cloud Armor, GitHub WIF</li><li><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/deploy" target="_blank" rel="noopener"><code>deploy/</code></a> — namespace, secrets, Helm releases</li></ol>
       <p class="src">tfvars live in Secret Manager as <code>tofu-tfvars-&lt;env&gt;</code>; never in git.</p></div>
     <div class="card"><h2>Helm charts</h2>
-      <p><span class="pill">care_be</span><span class="pill">care_fe</span><span class="pill">redis</span><span class="pill">gateway</span></p>
-      <p style="margin-top:10px"><span class="pill o">metabase</span><span class="pill o">dcm4chee</span><span class="pill o">care_metrics_exporter</span></p>
+      <p><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/care_be" target="_blank" rel="noopener"><span class="pill">care_be</span></a><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/care_fe" target="_blank" rel="noopener"><span class="pill">care_fe</span></a><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/redis" target="_blank" rel="noopener"><span class="pill">redis</span></a><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/gateway" target="_blank" rel="noopener"><span class="pill">gateway</span></a></p>
+      <p style="margin-top:10px"><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/metabase" target="_blank" rel="noopener"><span class="pill o">metabase</span></a><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/dcm4chee" target="_blank" rel="noopener"><span class="pill o">dcm4chee</span></a><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/care_metrics_exporter" target="_blank" rel="noopener"><span class="pill o">care_metrics_exporter</span></a></p>
       <ul style="margin-top:16px"><li>GKE zonal, STABLE channel, private control plane, Gateway API</li><li>Managed Prometheus + alert when <code>celery</code> queue &gt; 200 for 5 min</li></ul></div>
   </div>
 </section>
@@ -137,8 +138,8 @@
     <div class="card t"><h2>PostgreSQL</h2><p>Primary DB (+ read replica on GCP). Required.</p></div>
     <div class="card t"><h2>Redis + Storage</h2><p>Broker/cache and file store. Required.</p></div>
     <div class="card"><h2>Metabase</h2><p>Analytics dashboards, own metadata DB. Optional.</p></div>
-    <div class="card"><h2>AI engine</h2><p>Delivered as backend plugs (<code>care_scribe</code>, <code>ambient_scribe</code>) calling an external model API. Optional.</p></div>
-    <div class="card"><h2>DICOM / PACS</h2><p><code>dcm4chee</code> + OHIF viewer, enabled with <code>enable_dicom</code>. Optional.</p></div>
+    <div class="card"><h2>AI engine</h2><p>Delivered as backend plugs (<a href="https://github.com/10bedicu/care_scribe" target="_blank" rel="noopener"><code>care_scribe</code></a>, <a href="https://github.com/egovhealthcare/ambient_scribe" target="_blank" rel="noopener"><code>ambient_scribe</code></a>) calling an external model API. Optional.</p></div>
+    <div class="card"><h2>DICOM / PACS</h2><p><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/dcm4chee" target="_blank" rel="noopener"><code>dcm4chee</code></a> + OHIF viewer, enabled with <code>enable_dicom</code>. Optional.</p></div>
     <div class="card"><h2>Plugs</h2><p>Installed at build via <code>ADDITIONAL_PLUGS</code> (ABDM, radiology, payments…). Optional.</p></div>
   </div>
 </section>
@@ -230,8 +231,8 @@
   <div class="kicker">Environment setup · Staging</div>
   <h1>Staging: configure, test, train</h1>
   <div class="grid g2">
-    <div class="card t"><h2>Where everything happens first</h2><ul><li>Dedicated GCP project with the full gcp_template stack</li><li>Builds from the <code>develop</code> ref of <code>care</code> / <code>care_fe</code></li><li>New plugs, value sets, roles and config tested here</li><li>Training runs on staging, never production</li></ul></div>
-    <div class="card"><h2>auto-deploy-states repo</h2><ul><li><code>env/&lt;name&gt;/</code>: <code>deploy_config.json</code>, <code>care.env</code>, <code>care_fe.env</code></li><li><b>Build</b> workflow → image <code>latest-&lt;run&gt;</code> in Artifact Registry</li><li><b>Deploy</b> workflow → OpenTofu plan → approval issue → apply</li><li>GitHub → GCP via Workload Identity Federation (no keys)</li></ul></div>
+    <div class="card t"><h2>Where everything happens first</h2><ul><li>Dedicated GCP project with the full <a href="https://github.com/egovhealthcare/gcp_template" target="_blank" rel="noopener">gcp_template</a> stack</li><li>Builds from the <code>develop</code> ref of <a href="https://github.com/ohcnetwork/care" target="_blank" rel="noopener"><code>care</code></a> / <a href="https://github.com/ohcnetwork/care_fe" target="_blank" rel="noopener"><code>care_fe</code></a></li><li>New plugs, value sets, roles and config tested here</li><li>Training runs on staging, never production</li></ul></div>
+    <div class="card"><h2><a href="https://github.com/egovhealthcare/auto-deploy-states" target="_blank" rel="noopener">auto-deploy-states</a> repo</h2><ul><li><a href="https://github.com/egovhealthcare/auto-deploy-states/tree/HEAD/env" target="_blank" rel="noopener"><code>env/&lt;name&gt;/</code></a>: <code>deploy_config.json</code>, <code>care.env</code>, <code>care_fe.env</code></li><li><a href="https://github.com/egovhealthcare/auto-deploy-states/blob/HEAD/.github/workflows/build.yaml" target="_blank" rel="noopener"><b>Build</b> workflow</a> → image <code>latest-&lt;run&gt;</code> in Artifact Registry</li><li><a href="https://github.com/egovhealthcare/auto-deploy-states/blob/HEAD/.github/workflows/deploy.yaml" target="_blank" rel="noopener"><b>Deploy</b> workflow</a> → OpenTofu plan → approval issue → apply</li><li>GitHub → GCP via Workload Identity Federation (no keys)</li></ul></div>
   </div>
   <div class="flow" style="margin-top:22px">
     <div class="step">Edit env config<small>PR to auto-deploy-states</small></div><div class="arr">→</div>
@@ -265,7 +266,7 @@
   <div class="kicker">Environment setup · Metabase</div>
   <h1>Dashboards with Metabase</h1>
   <div class="grid g2">
-    <div class="card"><h2>Optional — only for analytics</h2><ul><li>Chart <code>metabase/metabase:v0.63.13</code>, port 3000, health <code>/api/health</code></li><li>Own metadata DB (Cloud SQL <code>db-f1-micro</code>)</li><li>Plan ~1.5 Gi RAM for the pod</li></ul></div>
+    <div class="card"><h2>Optional — only for analytics</h2><ul><li><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/metabase" target="_blank" rel="noopener">Chart</a> <code>metabase/metabase:v0.63.13</code>, port 3000, health <code>/api/health</code></li><li>Own metadata DB (Cloud SQL <code>db-f1-micro</code>)</li><li>Plan ~1.5 Gi RAM for the pod</li></ul></div>
     <div class="card t"><h2>Connect to CARE data — two ways</h2><ol style="padding-left:26px"><li><b>Read replica</b> (GCP default): Cloud SQL replica, reporting never loads the primary</li><li><b>Read-only SQL user</b> on the CARE DB — simpler, works anywhere, including on-prem</li></ol></div>
   </div>
   <div class="note" style="margin-top:22px">Never give Metabase a read-write user. Prefer the replica for heavy dashboards.</div>
@@ -275,7 +276,7 @@
 <section class="slide cover">
   <div class="l"><div class="kicker">Recap</div><h1>Start small, scale on signals</h1>
     <p class="muted">3 small nodes + a 2-vCPU Postgres runs a real state HMIS today. Use HPA for API and workers, promote staging → production by commit, and add Metabase only when you need analytics.</p></div>
-  <div class="r"><ul><li>github.com/ohcnetwork/care</li><li>github.com/ohcnetwork/care_fe</li><li>gcp_template</li><li>auto-deploy-states</li></ul></div>
+  <div class="r"><ul><li><a href="https://github.com/ohcnetwork/care" target="_blank" rel="noopener">github.com/ohcnetwork/care</a></li><li><a href="https://github.com/ohcnetwork/care_fe" target="_blank" rel="noopener">github.com/ohcnetwork/care_fe</a></li><li><a href="https://github.com/egovhealthcare/gcp_template" target="_blank" rel="noopener">github.com/egovhealthcare/gcp_template</a></li><li><a href="https://github.com/egovhealthcare/auto-deploy-states" target="_blank" rel="noopener">github.com/egovhealthcare/auto-deploy-states</a></li></ul></div>
 </section>
 
 </div>
@@ -285,7 +286,7 @@
   function fit(){const k=Math.min(innerWidth/1600,innerHeight/900);s.forEach(e=>e.style.transform='scale('+k+')');}
   function show(n){i=Math.max(0,Math.min(s.length-1,n));s.forEach((e,j)=>e.classList.toggle('active',j===i));location.hash=i+1;}
   addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key))show(i+1);if(['ArrowLeft','PageUp'].includes(e.key))show(i-1);});
-  addEventListener('click',e=>show(i+(e.clientX>innerWidth/2?1:-1)));
+  addEventListener('click',e=>{if(e.target.closest('a'))return;show(i+(e.clientX>innerWidth/2?1:-1));});
   addEventListener('resize',fit);fit();show((parseInt(location.hash.slice(1))||1)-1);
 </script>
 </body>
