@@ -262,6 +262,8 @@ npm run dev
 
 `slides/slides.md` is a symlink to the canonical Markdown; edit `docs/session-3-slides.md` only. The [older standalone HTML deck](docs/session-3-canva-style.html) is retained for reference and **does not reflect this operator-focused revision**. The Slidev build output is generated locally and not committed.
 
+For a shorter presenter-led version, edit the [eight-slide skeleton](slides/skeleton.md) and run `npm run dev:skeleton` or `npm run export:skeleton` from `slides/`. Its PDF is generated locally and not committed; the full workshop deck remains available above.
+
 ## Additional material
 
 - [Session 3 Markdown slides](docs/session-3-slides.md)

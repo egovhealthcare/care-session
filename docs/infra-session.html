@@ -175,7 +175,7 @@
 <section class="slide">
   <div class="kicker">Scoping &amp; provisioning</div>
   <h1>Autoscaling with HPA</h1>
-  <p class="lead">Autoscaling is a built-in Kubernetes feature (Horizontal Pod Autoscaler). We use it to add or remove CARE backend and worker copies automatically based on usage.</p>
+  <p class="lead" style="margin-bottom:28px;color:#475569;max-width:1100px">Autoscaling is a built-in Kubernetes feature (Horizontal Pod Autoscaler). We use it to add or remove CARE backend and worker copies automatically based on usage.</p>
   <div class="grid g2">
     <div class="card t"><h2>Backend API</h2><ul><li>HPA on CPU, template default 2 → 6 pods at 80%</li><li><code>api_autoscaling_min/max_replicas</code> in <code>helm_config</code></li><li>Scale-down waits 15 min (<code>stabilizationWindowSeconds: 900</code>)</li></ul></div>
     <div class="card t"><h2>Celery Worker</h2><ul><li>Same HPA pattern, default 2 → 6 at 80%</li><li>Live example: 2 → 8 pods at 60% CPU</li><li>Watch queue depth — the alert fires at &gt; 200 waiting tasks</li></ul></div>

@@ -7,8 +7,10 @@
     "prebuild": "npm run sync:assets",
     "preexport": "npm run sync:assets",
     "dev": "slidev slides.md --open",
+    "dev:skeleton": "slidev skeleton.md --open",
     "build": "slidev build slides.md --out ../docs/operator-slides",
-    "export": "slidev export slides.md --per-slide --wait-until networkidle --wait 800 --output ../care-operator-workshop.pdf"
+    "export": "slidev export slides.md --per-slide --wait-until networkidle --wait 800 --output ../care-operator-workshop.pdf",
+    "export:skeleton": "slidev export skeleton.md --per-slide --wait-until networkidle --wait 800 --output ../care-session-3-skeleton.pdf"
   },
   "devDependencies": {
     "@slidev/cli": "53.0.0",
