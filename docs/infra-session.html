@@ -138,7 +138,7 @@
     <div class="card t"><h2>Redis + Storage</h2><p>Broker/cache and file store. Required.</p></div>
     <div class="card"><h2>Metabase</h2><p>Analytics dashboards, own metadata DB. Optional.</p></div>
     <div class="card"><h2>AI engine</h2><p><a href="https://github.com/10bedicu/care_scribe" target="_blank" rel="noopener"><code>care_scribe</code></a> added via <code>ADDITIONAL_PLUGS</code>. Works with different AI model providers; <a href="https://github.com/egovhealthcare/gcp_template/blob/HEAD/infra/scribe.tf" target="_blank" rel="noopener">gcp_template</a> wires it to Gemini on Vertex AI in India (asia-south1). Optional.</p></div>
-    <div class="card"><h2>DICOM / PACS</h2><p><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/dcm4chee" target="_blank" rel="noopener"><code>dcm4chee</code></a> + OHIF viewer, enabled with <code>enable_dicom</code>. Optional.</p></div>
+    <div class="card"><h2>DICOM</h2><p><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/dcm4chee" target="_blank" rel="noopener"><code>dcm4chee</code></a> stores medical images (X-ray, CT, MRI) and lets clinicians view them in the browser. Optional.</p></div>
     <div class="card"><h2>Plugs</h2><p>Installed at build via <code>ADDITIONAL_PLUGS</code> (ABDM, radiology, payments…). Optional.</p></div>
   </div>
 </section>
