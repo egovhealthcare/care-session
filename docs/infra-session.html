@@ -222,6 +222,30 @@ make deploy</pre>
   </div>
 </section>
 
+<!-- local setup -->
+<section class="slide">
+  <div class="kicker">Hands-on · Local setup</div>
+  <h1>Run CARE on your own machine</h1>
+  <div class="grid g2">
+    <div class="card t"><h2>Steps</h2><pre class="cmd"># 1. Get the workshop repo + CARE sources
+git clone https://github.com/jesbinjoseph/care-session.git && cd care-session
+git clone --depth 1 -b develop https://github.com/ohcnetwork/care.git
+git clone --depth 1 -b develop https://github.com/ohcnetwork/care_fe.git
+
+# 2. Local config (never overwrite an existing .env)
+test -f .env || cp .env.example .env
+cp frontend.env.production.local care_fe/.env.production.local
+
+# 3. Build and start everything
+docker compose up -d --build --wait
+
+# 4. Check it works
+curl -f http://localhost:9000/ping/
+open http://localhost:4000</pre></div>
+    <div class="card"><h2>What you get</h2><ul><li>Needs only Docker with Compose</li><li>7 services: frontend, backend, worker, beat, PostgreSQL, Redis, local S3 storage</li><li>Beat runs database migrations first, then backend and worker start</li><li>Frontend on <code>localhost:4000</code>, API on <code>localhost:9000</code></li><li>Stop with <code>docker compose down</code> — your data is kept</li><li>Full guide: <a href="https://github.com/jesbinjoseph/care-session#readme" target="_blank" rel="noopener">care-session README</a></li></ul></div>
+  </div>
+</section>
+
 <!-- 15 -->
 <section class="slide cover">
   <div class="l"><div class="kicker">Recap</div><h1>Start small, scale on signals</h1></div>
