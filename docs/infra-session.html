@@ -241,8 +241,15 @@ docker compose up -d --build --wait
 
 # 4. Check it works
 curl -f http://localhost:9000/ping/
-open http://localhost:4000</pre></div>
-    <div class="card"><h2>What you get</h2><ul><li>Needs only Docker with Compose</li><li>7 services: frontend, backend, worker, beat, PostgreSQL, Redis, local S3 storage</li><li>Beat runs database migrations first, then backend and worker start</li><li>Frontend on <code>localhost:4000</code>, API on <code>localhost:9000</code></li><li>Stop with <code>docker compose down</code> — your data is kept</li><li>Full guide: <a href="https://github.com/jesbinjoseph/care-session#readme" target="_blank" rel="noopener">care-session README</a></li></ul></div>
+open http://localhost:4000
+
+# 5. Load demo data (synthetic, local only)
+docker compose exec backend python -m pip install \
+  --target /tmp/care-fixtures-deps 'Faker==38.2.0'
+docker compose exec -e PYTHONPATH=/tmp/care-fixtures-deps \
+  -e 'DJANGO_ALLOWED_HOSTS=["localhost","127.0.0.1","backend","testserver"]' \
+  backend python manage.py load_fixtures</pre></div>
+    <div class="card"><h2>What you get</h2><ul><li>Needs only Docker with Compose</li><li>7 services: frontend, backend, worker, beat, PostgreSQL, Redis, local S3 storage</li><li>Beat runs database migrations first, then backend and worker start</li><li>Frontend on <code>localhost:4000</code>, API on <code>localhost:9000</code></li><li>Demo data is fake — never load fixtures on a real instance</li><li>Stop with <code>docker compose down</code> — your data is kept</li><li>Full guide: <a href="https://github.com/jesbinjoseph/care-session#readme" target="_blank" rel="noopener">care-session README</a></li></ul></div>
   </div>
 </section>
 
