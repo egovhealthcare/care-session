@@ -5,57 +5,70 @@
 <title>CARE HMIS — Infrastructure & Environments</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --teal:#1F6F6B; --teal-2:#2A9D8F; --teal-soft:#E6F4F1; --navy:#16324F;
-    --ink:#1E293B; --muted:#5B6B7B; --line:#D5E3E0; --amber:#C2410C; --bg:#FFFFFF;
+    --teal:#12806A; --teal-2:#0F8B6C; --teal-soft:#EEF6F1; --navy:#052E24; --forest:#173D34;
+    --lime:#B8F36F; --ink:#0B1220; --muted:#4B5563; --line:#DDE5E0; --amber:#12806A; --bg:#F7F9F6;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%;background:#0f1f1e;font-family:Inter,system-ui,sans-serif;color:var(--ink)}
+  html,body{height:100%;background:#052E24;font-family:Switzer,system-ui,sans-serif;color:var(--ink)}
   .deck{position:relative;width:100vw;height:100vh;overflow:hidden}
-  .slide{position:absolute;inset:0;margin:auto;width:1600px;height:900px;background:var(--bg);
-    display:none;flex-direction:column;padding:64px 88px 56px;transform-origin:center center}
+  .slide{position:absolute;inset:0;margin:auto;width:1600px;height:900px;display:none;flex-direction:column;padding:64px 88px 56px;transform-origin:center center;
+    background:
+      radial-gradient(900px 500px at 0% 0%,rgba(18,128,106,.10),transparent 60%),
+      radial-gradient(900px 500px at 100% 0%,rgba(184,243,111,.14),transparent 60%),
+      linear-gradient(rgba(5,46,36,.045) 1px,transparent 1px) 0 0/48px 48px,
+      linear-gradient(90deg,rgba(5,46,36,.045) 1px,transparent 1px) 0 0/48px 48px,
+      var(--bg)}
   .slide.active{display:flex}
-  .slide::before{content:"";position:absolute;left:0;top:0;bottom:0;width:14px;background:var(--teal)}
-  .kicker{font:700 16px Montserrat;letter-spacing:.18em;text-transform:uppercase;color:var(--teal-2);margin-bottom:10px}
-  h1{font:800 54px/1.1 Montserrat;color:var(--teal);margin-bottom:28px}
-  h2{font:700 24px Montserrat;color:var(--navy);margin-bottom:12px}
-  p,li{font-size:22px;line-height:1.5}
-  ul{padding-left:26px} li{margin:6px 0}
+  .kicker{align-self:flex-start;font:600 14px Switzer,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);
+    background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 14px;margin-bottom:16px;box-shadow:0 1px 2px rgba(5,46,36,.06)}
+  .kicker::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--teal);margin-right:9px;vertical-align:1px}
+  h1{font:700 56px/1.02 "Bricolage Grotesque",sans-serif;letter-spacing:-.03em;color:var(--ink);margin-bottom:28px}
+  h2{font:600 23px Switzer,sans-serif;color:var(--ink);margin-bottom:12px;letter-spacing:-.01em}
+  p,li{font-size:21px;line-height:1.5;color:#1F2937}
+  ul,ol{padding-left:24px} li{margin:6px 0} li::marker{color:var(--teal)}
   .muted{color:var(--muted)}
-  .grid{display:grid;gap:24px;flex:1}
+  .grid{display:grid;gap:22px;flex:1}
   .g2{grid-template-columns:1fr 1fr} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
-  .card{border:2px solid var(--line);border-radius:18px;padding:24px 26px;background:#fff}
-  .card.t{border-color:var(--teal-2);background:var(--teal-soft)}
-  .card h2{font-size:22px}
-  .card li,.card p{font-size:19px}
-  table{border-collapse:collapse;width:100%;font-size:19px}
-  th{font:700 16px Montserrat;text-transform:uppercase;letter-spacing:.06em;color:#fff;background:var(--teal);text-align:left;padding:12px 14px}
+  .card{border:1px solid var(--line);border-radius:12px;padding:24px 26px;background:#fff;box-shadow:0 1px 2px rgba(5,46,36,.05),0 8px 24px -12px rgba(5,46,36,.12)}
+  .card.t{background:var(--navy);border-color:var(--navy)}
+  .card.t h2,.card.t h2 a{color:var(--lime)} .card.t li,.card.t p{color:#E7F2EC} .card.t li::marker{color:var(--lime)}
+  .card.t code{background:rgba(184,243,111,.14);color:var(--lime)} .card.t a{color:#fff;text-decoration-color:var(--lime)}
+  .card.t .big{color:#fff}
+  .card h2{font-size:21px}
+  .card li,.card p{font-size:18.5px}
+  table{border-collapse:separate;border-spacing:0;width:100%;font-size:19px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th{font:600 14px Switzer,sans-serif;text-transform:uppercase;letter-spacing:.07em;color:var(--lime);background:var(--navy);text-align:left;padding:12px 14px}
   td{padding:11px 14px;border-bottom:1px solid var(--line)}
-  tr:nth-child(even) td{background:#F6FBFA}
-  code{font:500 .9em ui-monospace,Menlo,monospace;background:var(--teal-soft);color:var(--teal);padding:2px 7px;border-radius:6px}
-  .foot{position:absolute;left:88px;right:88px;bottom:22px;display:flex;justify-content:space-between;font:600 14px Montserrat;color:var(--muted)}
+  tr:last-child td{border-bottom:0}
+  tr:nth-child(even) td{background:#F7FAF8}
+  code{font:500 .88em ui-monospace,Menlo,monospace;background:var(--teal-soft);color:var(--teal);padding:2px 7px;border-radius:6px}
+  .foot{position:absolute;left:88px;right:88px;bottom:22px;display:flex;justify-content:space-between;font:500 14px Switzer,sans-serif;color:var(--muted)}
   .src{font-size:15px;color:var(--muted);margin-top:14px}
-  .pill{display:inline-block;font:700 15px Montserrat;padding:6px 14px;border-radius:999px;background:var(--teal);color:#fff;margin-right:8px}
-  .pill.o{background:#fff;color:var(--teal);border:2px solid var(--teal)}
-  .flow{display:flex;align-items:center;gap:14px;margin:10px 0 18px}
-  .flow .step{flex:1;text-align:center;border:2px solid var(--teal-2);border-radius:14px;padding:16px 10px;background:var(--teal-soft);font:700 18px Montserrat;color:var(--navy)}
-  .flow .step small{display:block;font:500 15px Inter;color:var(--muted);margin-top:4px}
-  .flow .arr{font:800 30px Montserrat;color:var(--teal)}
-  .big{font:800 44px Montserrat;color:var(--teal)}
+  .pill{display:inline-block;font:600 15px Switzer,sans-serif;padding:8px 16px;border-radius:8px;background:var(--navy);color:#fff;margin-right:8px}
+  .pill.o{background:#fff;color:var(--forest);border:1px solid var(--line)}
+  .flow{display:flex;align-items:center;gap:12px;margin:10px 0 18px}
+  .flow .step{flex:1;text-align:center;border:1px solid var(--line);border-radius:12px;padding:16px 10px;background:#fff;font:600 18px Switzer,sans-serif;color:var(--ink);box-shadow:0 1px 2px rgba(5,46,36,.05)}
+  .flow .step:last-child{background:var(--navy);color:#fff;border-color:var(--navy)} .flow .step:last-child small{color:var(--lime)}
+  .flow .step small{display:block;font:400 15px Switzer,sans-serif;color:var(--muted);margin-top:4px}
+  .flow .arr{font:600 26px Switzer,sans-serif;color:var(--teal)}
+  .big{font:700 42px "Bricolage Grotesque",sans-serif;letter-spacing:-.02em;color:var(--teal)}
   /* title / closing */
   .cover{padding:0;flex-direction:row}
   .cover .l{flex:1.15;padding:120px 96px;display:flex;flex-direction:column;justify-content:center}
-  .cover .r{flex:1;background:var(--teal);color:#fff;padding:120px 80px;display:flex;flex-direction:column;justify-content:center}
-  .cover h1{font-size:76px}
-  .cover .r li{font:600 26px Montserrat;margin:14px 0;list-style:none}
-  .cover .r li::before{content:"— ";opacity:.6}
+  .cover .r{flex:1;background:var(--navy);color:#fff;padding:120px 80px;display:flex;flex-direction:column;justify-content:center;
+    background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:48px 48px}
+  .cover h1{font-size:88px;letter-spacing:-.04em}
+  .cover .r li{font:500 26px Switzer,sans-serif;margin:14px 0;list-style:none;color:#fff}
+  .cover .r li::before{content:"/ ";color:var(--lime)}
   .diagram{flex:1;display:flex;align-items:center;justify-content:center}
-  .diagram img{max-width:100%;max-height:640px}
-  a{color:inherit;text-decoration:underline;text-decoration-color:var(--teal-2);text-underline-offset:3px} .cover .r a{color:#fff}
+  .diagram img{max-width:100%;max-height:560px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+  a{color:inherit;text-decoration:underline;text-decoration-color:var(--teal-2);text-underline-offset:3px} .cover .r a{color:#fff;text-decoration-color:var(--lime)}
   table.compact{font-size:17px} table.compact td{padding:7px 10px}
-  .note{border-left:6px solid var(--amber);background:#FFF7ED;padding:14px 20px;border-radius:8px;font-size:19px}
+  .note{border:1px solid var(--line);border-left:4px solid var(--teal);background:#fff;padding:14px 20px;border-radius:10px;font-size:19px}
 </style>
 </head>
 <body>
@@ -147,7 +160,7 @@
 <section class="slide">
   <div class="kicker">Infra requirements · Hardware</div>
   <h1>Per-component resources</h1>
-  <table class="compact"><tr><th>Component</th><th>Copies</th><th>CPU each</th><th>Memory each</th><th>Actually uses (each)</th></tr><tr><td><b>Backend API</b></td><td>2</td><td>0.5 vCPU</td><td>1 GB</td><td>0.1 vCPU · 0.6 GB</td></tr><tr><td><b>Celery Worker</b></td><td>1</td><td>0.5 vCPU</td><td>0.5 GB</td><td>&lt;0.05 vCPU · 0.3 GB</td></tr><tr><td><b>Celery Beat</b></td><td>1</td><td>0.15 vCPU</td><td>0.25 GB</td><td>~0 vCPU · 0.25 GB</td></tr><tr><td><b>Frontend</b></td><td>2</td><td>0.1 vCPU</td><td>0.125 GB</td><td>~0 vCPU · &lt;0.05 GB</td></tr><tr><td><b>Redis</b></td><td>1</td><td>0.1 vCPU</td><td>0.125 GB</td><td>~0 vCPU · &lt;0.05 GB</td></tr><tr><td><b>PostgreSQL</b></td><td>1</td><td>2 vCPU</td><td>3.75 GB RAM + 10–15 GB SSD</td><td>Same on every instance</td></tr><tr><td style="background:var(--teal-soft)"><b>Total — core CARE</b></td><td style="background:var(--teal-soft)"></td><td style="background:var(--teal-soft)"><b>~4 vCPU</b></td><td style="background:var(--teal-soft)"><b>~7 GB RAM + 15 GB SSD</b></td><td style="background:var(--teal-soft)"></td></tr><tr><td><b>Metabase (optional)</b></td><td>1</td><td>0.5 vCPU</td><td>1.5 GB</td><td>~0 vCPU · 1.4 GB</td></tr><tr><td><b>PostgreSQL read replica (optional)</b></td><td>1</td><td>1 vCPU</td><td>3.75 GB RAM + 10–15 GB SSD</td><td>Used by Metabase</td></tr><tr><td style="background:var(--teal-soft)"><b>Total — with analytics</b></td><td style="background:var(--teal-soft)"></td><td style="background:var(--teal-soft)"><b>~5.5 vCPU</b></td><td style="background:var(--teal-soft)"><b>~12.5 GB RAM + 30 GB SSD</b></td><td style="background:var(--teal-soft)"></td></tr></table>
+  <table class="compact"><tr><th>Component</th><th>Copies</th><th>CPU each</th><th>Memory each</th><th>Actually uses (each)</th></tr><tr><td><b>Backend API</b></td><td>2</td><td>0.5 vCPU</td><td>1 GB</td><td>0.1 vCPU · 0.6 GB</td></tr><tr><td><b>Celery Worker</b></td><td>1</td><td>0.5 vCPU</td><td>0.5 GB</td><td>&lt;0.05 vCPU · 0.3 GB</td></tr><tr><td><b>Celery Beat</b></td><td>1</td><td>0.15 vCPU</td><td>0.25 GB</td><td>~0 vCPU · 0.25 GB</td></tr><tr><td><b>Frontend</b></td><td>2</td><td>0.1 vCPU</td><td>0.125 GB</td><td>~0 vCPU · &lt;0.05 GB</td></tr><tr><td><b>Redis</b></td><td>1</td><td>0.1 vCPU</td><td>0.125 GB</td><td>~0 vCPU · &lt;0.05 GB</td></tr><tr><td><b>PostgreSQL</b></td><td>1</td><td>2 vCPU</td><td>3.75 GB RAM + 10–15 GB SSD</td><td>Same on every instance</td></tr><tr><td style="background:#F1FBE4"><b>Total — core CARE</b></td><td style="background:#F1FBE4"></td><td style="background:#F1FBE4"><b>~4 vCPU</b></td><td style="background:#F1FBE4"><b>~7 GB RAM + 15 GB SSD</b></td><td style="background:#F1FBE4"></td></tr><tr><td><b>Metabase (optional)</b></td><td>1</td><td>0.5 vCPU</td><td>1.5 GB</td><td>~0 vCPU · 1.4 GB</td></tr><tr><td><b>PostgreSQL read replica (optional)</b></td><td>1</td><td>1 vCPU</td><td>3.75 GB RAM + 10–15 GB SSD</td><td>Used by Metabase</td></tr><tr><td style="background:#F1FBE4"><b>Total — with analytics</b></td><td style="background:#F1FBE4"></td><td style="background:#F1FBE4"><b>~5.5 vCPU</b></td><td style="background:#F1FBE4"><b>~12.5 GB RAM + 30 GB SSD</b></td><td style="background:#F1FBE4"></td></tr></table>
   <p class="src">CPU / memory = what to reserve per copy (Helm chart requests). Actual use is from running instances. Leave headroom — the backend can burst to 1.5 vCPU / 2 GB per copy.</p>
 </section>
 
@@ -175,7 +188,7 @@
 <section class="slide">
   <div class="kicker">Scoping &amp; provisioning</div>
   <h1>Autoscaling with HPA</h1>
-  <p class="lead" style="margin-bottom:28px;color:#475569;max-width:1100px">Autoscaling is a built-in Kubernetes feature (Horizontal Pod Autoscaler). We use it to add or remove CARE backend and worker copies automatically based on usage.</p>
+  <p class="lead" style="margin-bottom:28px;color:var(--muted);max-width:1100px">Autoscaling is a built-in Kubernetes feature (Horizontal Pod Autoscaler). We use it to add or remove CARE backend and worker copies automatically based on usage.</p>
   <div class="grid g2">
     <div class="card t"><h2>Backend API</h2><ul><li>HPA on CPU, template default 2 → 6 pods at 80%</li><li><code>api_autoscaling_min/max_replicas</code> in <code>helm_config</code></li><li>Scale-down waits 15 min (<code>stabilizationWindowSeconds: 900</code>)</li></ul></div>
     <div class="card t"><h2>Celery Worker</h2><ul><li>Same HPA pattern, default 2 → 6 at 80%</li><li>Live example: 2 → 8 pods at 60% CPU</li><li>Watch queue depth — the alert fires at &gt; 200 waiting tasks</li></ul></div>
