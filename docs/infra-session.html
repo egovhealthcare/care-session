@@ -147,17 +147,8 @@
 <section class="slide">
   <div class="kicker">Infra requirements · Hardware</div>
   <h1>Per-component resources</h1>
-  <table>
-    <tr><th>Component</th><th>Chart request</th><th>Chart limit</th><th>Observed in live instances</th></tr>
-    <tr><td><b>Backend API</b> (per pod)</td><td>500m CPU / 1 Gi</td><td>1.5 CPU / 2 Gi</td><td>20–150m CPU · 490–670 Mi</td></tr>
-    <tr><td><b>Celery Worker</b> (per pod)</td><td>500m / 512 Mi</td><td>1.5 CPU / 2 Gi</td><td>3–46m · 220–300 Mi</td></tr>
-    <tr><td><b>Celery Beat</b></td><td>150m / 250 Mi</td><td>250m / 2 Gi</td><td>0–4m · 170–260 Mi</td></tr>
-    <tr><td><b>Frontend</b> (per pod)</td><td>100m / 128 Mi</td><td>200m / 256 Mi</td><td>1m · 3–40 Mi</td></tr>
-    <tr><td><b>Redis</b></td><td>100m / 128 Mi</td><td>500m / 256 Mi</td><td>4–12m · 7–23 Mi</td></tr>
-    <tr><td><b>Metabase</b></td><td>500m / 512 Mi</td><td>1 CPU / 1 Gi</td><td>17–25m · ~1.3–1.4 Gi</td></tr>
-    <tr><td><b>PostgreSQL</b></td><td colspan="2">Cloud SQL <code>db-custom-2-3840</code> (2 vCPU / 3.75 GB), 10–15 GB SSD</td><td>Same tier on every instance</td></tr>
-  </table>
-  <p class="src">Observed: <code>kubectl top</code> snapshot across 4 production instances + staging, Sep 2026. Metabase runs above its chart memory request — plan ~1.5 Gi for it.</p>
+  <table class="compact"><tr><th>Component</th><th>Copies</th><th>CPU each</th><th>Memory each</th><th>Actually uses (each)</th></tr><tr><td><b>Backend API</b></td><td>2</td><td>0.5 vCPU</td><td>1 GB</td><td>0.1 vCPU · 0.6 GB</td></tr><tr><td><b>Celery Worker</b></td><td>1</td><td>0.5 vCPU</td><td>0.5 GB</td><td>&lt;0.05 vCPU · 0.3 GB</td></tr><tr><td><b>Celery Beat</b></td><td>1</td><td>0.15 vCPU</td><td>0.25 GB</td><td>~0 vCPU · 0.25 GB</td></tr><tr><td><b>Frontend</b></td><td>2</td><td>0.1 vCPU</td><td>0.125 GB</td><td>~0 vCPU · &lt;0.05 GB</td></tr><tr><td><b>Redis</b></td><td>1</td><td>0.1 vCPU</td><td>0.125 GB</td><td>~0 vCPU · &lt;0.05 GB</td></tr><tr><td><b>PostgreSQL</b></td><td>1</td><td>2 vCPU</td><td>3.75 GB RAM + 10–15 GB SSD</td><td>Same on every instance</td></tr><tr><td style="background:var(--teal-soft)"><b>Total — core CARE</b></td><td style="background:var(--teal-soft)"></td><td style="background:var(--teal-soft)"><b>~4 vCPU</b></td><td style="background:var(--teal-soft)"><b>~7 GB RAM + 15 GB SSD</b></td><td style="background:var(--teal-soft)"></td></tr><tr><td><b>Metabase (optional)</b></td><td>1</td><td>0.5 vCPU</td><td>1.5 GB</td><td>~0 vCPU · 1.4 GB</td></tr><tr><td><b>PostgreSQL read replica (optional)</b></td><td>1</td><td>1 vCPU</td><td>3.75 GB RAM + 10–15 GB SSD</td><td>Used by Metabase</td></tr><tr><td style="background:var(--teal-soft)"><b>Total — with analytics</b></td><td style="background:var(--teal-soft)"></td><td style="background:var(--teal-soft)"><b>~5.5 vCPU</b></td><td style="background:var(--teal-soft)"><b>~12.5 GB RAM + 30 GB SSD</b></td><td style="background:var(--teal-soft)"></td></tr></table>
+  <p class="src">CPU / memory = what to reserve per copy (Helm chart requests). Actual use is from running instances. Leave headroom — the backend can burst to 1.5 vCPU / 2 GB per copy.</p>
 </section>
 
 <!-- 8 -->
