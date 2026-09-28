@@ -85,14 +85,14 @@
   <div class="kicker">Infra requirements · Tech stack</div>
   <h1>Technology per component</h1>
   <table>
-    <tr><th>Component</th><th>Technology (from repos)</th><th>Role</th></tr>
-    <tr><td><b>Frontend</b></td><td>React 19 + TypeScript + Vite, built on <code>node:22</code>, served by <code>nginx:stable-alpine</code></td><td>Static SPA</td></tr>
-    <tr><td><b>Backend API</b></td><td>Python 3.13, Django 6.0, DRF, Gunicorn — <code>/app/start.sh</code>, port 9000, health <code>/ping/</code></td><td>REST API</td></tr>
-    <tr><td><b>Celery Worker</b></td><td>Celery 5.6 — same image, <code>/app/celery_worker.sh</code></td><td>Async tasks</td></tr>
-    <tr><td><b>Celery Beat</b></td><td>Same image, <code>/app/celery_beat.sh</code> — runs migrations + syncs, then Beat</td><td>Scheduler (1 replica)</td></tr>
-    <tr><td><b>PostgreSQL</b></td><td>Cloud SQL <code>POSTGRES_17</code>, private IP, PITR, 7 backups</td><td>Primary data</td></tr>
-    <tr><td><b>Redis</b></td><td><code>redis:8-alpine</code> in-cluster</td><td>Cache + Celery broker</td></tr>
-    <tr><td><b>Object storage</b></td><td>S3 API via boto3 → GCS in GCP, any S3-compatible store elsewhere. Backend only issues pre-signed PUT/GET URLs</td><td>Files: browser ↔ storage direct</td></tr>
+    <tr><th>Component</th><th>Technology</th><th>What it does</th></tr>
+    <tr><td><b>Frontend</b></td><td>React 19</td><td>The web app users see</td></tr>
+    <tr><td><b>Backend API</b></td><td>Django 6.0 (Python 3.13)</td><td>Handles all requests and business logic</td></tr>
+    <tr><td><b>Celery Worker</b></td><td>Celery 5.6</td><td>Runs background jobs</td></tr>
+    <tr><td><b>Celery Beat</b></td><td>Celery 5.6</td><td>Schedules recurring jobs (only one runs)</td></tr>
+    <tr><td><b>PostgreSQL</b></td><td>PostgreSQL 17</td><td>Stores patient and app data</td></tr>
+    <tr><td><b>Redis</b></td><td>Redis 8</td><td>Cache and job queue</td></tr>
+    <tr><td><b>Object storage</b></td><td>Any S3-compatible storage (GCS on GCP)</td><td>Stores uploaded files</td></tr>
   </table>
 </section>
 
