@@ -155,15 +155,8 @@
 <section class="slide">
   <div class="kicker">Infra requirements · Sizing</div>
   <h1>What real instances run today</h1>
-  <table>
-    <tr><th>Instance</th><th>GKE nodes</th><th>API pods</th><th>Workers</th><th>Cloud SQL</th><th>Node usage</th></tr>
-    <tr><td>Staging</td><td>3 × e2-standard-2</td><td>2</td><td>1</td><td>2 vCPU / 3.75 GB + 1-vCPU replica</td><td>7–17% CPU · 39–62% RAM</td></tr>
-    <tr><td>Instance A</td><td>3 × e2-standard-2</td><td>2</td><td>1</td><td>2 vCPU / 3.75 GB + replica</td><td>10–12% CPU · 41–59% RAM</td></tr>
-    <tr><td>Instance B</td><td>5 × e2-standard-2</td><td>4</td><td>2</td><td>2 vCPU / 3.75 GB + replica</td><td>8–10% CPU · 39–56% RAM</td></tr>
-    <tr><td>Instance C (+DICOM)</td><td>4 × e2-standard-2</td><td>4</td><td>2</td><td>2 vCPU / 3.75 GB + replica</td><td>7–21% CPU · 40–64% RAM</td></tr>
-    <tr><td>Instance D</td><td>4 × e2-standard-2</td><td>4</td><td>2 (HPA 2–8)</td><td>2 vCPU / 3.75 GB + replica</td><td>5–13% CPU · 31–63% RAM</td></tr>
-  </table>
-  <div class="note" style="margin-top:22px"><b>Takeaway:</b> every instance fits in 3–5 small nodes (2 vCPU / 8 GB each). Memory, not CPU, decides the node count.</div>
+  <table><tr><th>Instance</th><th>Total CPU</th><th>Total memory</th><th>Size</th></tr><tr><td><b>Staging</b></td><td>9 vCPU</td><td>~32 GB</td><td>Small</td></tr><tr><td><b>Instance A</b></td><td>9 vCPU</td><td>~32 GB</td><td>Small</td></tr><tr><td><b>Instance C (with DICOM)</b></td><td>11 vCPU</td><td>~40 GB</td><td>Medium</td></tr><tr><td><b>Instance D</b></td><td>11 vCPU</td><td>~40 GB</td><td>Medium</td></tr><tr><td><b>Instance B</b></td><td>13 vCPU</td><td>~48 GB</td><td>Largest</td></tr></table>
+  <div class="note" style="margin-top:22px"><b>Takeaway:</b> a full CARE HMIS instance runs today on about <b>9–13 vCPU and 32–48 GB of memory</b> in total, including the database. Most of it sits idle — CPU use stays under 25%.</div>
 </section>
 
 <!-- 9 -->
