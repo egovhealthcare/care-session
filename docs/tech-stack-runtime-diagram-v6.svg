@@ -6,6 +6,7 @@
       .sub{font-size:18px;fill:#475569}
       .h{font-size:24px;font-weight:700;fill:#0F172A}
       .d{font-size:16px;fill:#475569}
+      .v{font-size:15px;font-weight:700;fill:#0F766E}
       .lt{font-size:15px;font-weight:700;fill:#0F766E}
       .lo{font-size:15px;font-weight:700;fill:#C2410C}
       .lg{font-size:16px;fill:#334155}
@@ -59,32 +60,39 @@
     <text x="800" y="196" text-anchor="middle" class="d">Doctors, nurses, admins</text>
 
     <rect x="180" y="300" width="320" height="110" rx="16" fill="#ECFEFF" stroke="#0E7490" stroke-width="2.5"/>
-    <text x="340" y="348" text-anchor="middle" class="h">Frontend</text>
-    <text x="340" y="378" text-anchor="middle" class="d">React static files · Nginx</text>
+    <text x="340" y="340" text-anchor="middle" class="h">CARE Frontend</text>
+    <text x="340" y="368" text-anchor="middle" class="v">React 19 · Nginx</text>
+    <text x="340" y="392" text-anchor="middle" class="d">Static web app</text>
 
     <rect x="650" y="300" width="300" height="110" rx="16" fill="#F0FDF4" stroke="#15803D" stroke-width="2.5"/>
-    <text x="800" y="348" text-anchor="middle" class="h">Backend API</text>
-    <text x="800" y="378" text-anchor="middle" class="d">Django</text>
+    <text x="800" y="340" text-anchor="middle" class="h">CARE Backend</text>
+    <text x="800" y="368" text-anchor="middle" class="v">Django 6.0 · Python 3.13</text>
+    <text x="800" y="392" text-anchor="middle" class="d">REST API + business logic</text>
 
     <rect x="1120" y="300" width="320" height="110" rx="16" fill="#F5F3FF" stroke="#6D28D9" stroke-width="2.5"/>
-    <text x="1280" y="348" text-anchor="middle" class="h">PostgreSQL</text>
-    <text x="1280" y="378" text-anchor="middle" class="d">Patient + app records</text>
+    <text x="1280" y="340" text-anchor="middle" class="h">PostgreSQL</text>
+    <text x="1280" y="368" text-anchor="middle" class="v">PostgreSQL 17</text>
+    <text x="1280" y="392" text-anchor="middle" class="d">Patient + app records</text>
 
     <rect x="180" y="510" width="320" height="110" rx="16" fill="#FDF4FF" stroke="#A21CAF" stroke-width="2.5"/>
-    <text x="340" y="558" text-anchor="middle" class="h">Celery Beat</text>
-    <text x="340" y="588" text-anchor="middle" class="d">Scheduler · 1 replica only</text>
+    <text x="340" y="550" text-anchor="middle" class="h">Celery Beat</text>
+    <text x="340" y="578" text-anchor="middle" class="v">Celery 5.6</text>
+    <text x="340" y="602" text-anchor="middle" class="d">Scheduler · 1 replica only</text>
 
     <rect x="650" y="510" width="300" height="110" rx="16" fill="#FFF7ED" stroke="#EA580C" stroke-width="2.5"/>
-    <text x="800" y="558" text-anchor="middle" class="h">Redis</text>
-    <text x="800" y="588" text-anchor="middle" class="d">Cache + job queue</text>
+    <text x="800" y="550" text-anchor="middle" class="h">Redis</text>
+    <text x="800" y="578" text-anchor="middle" class="v">Redis 8</text>
+    <text x="800" y="602" text-anchor="middle" class="d">Cache + job queue</text>
 
     <rect x="1120" y="510" width="320" height="110" rx="16" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2.5"/>
-    <text x="1280" y="558" text-anchor="middle" class="h">Object Storage</text>
-    <text x="1280" y="588" text-anchor="middle" class="d">Uploaded files (S3 / GCS)</text>
+    <text x="1280" y="550" text-anchor="middle" class="h">Object Storage</text>
+    <text x="1280" y="578" text-anchor="middle" class="v">S3-compatible · GCS on GCP</text>
+    <text x="1280" y="602" text-anchor="middle" class="d">Uploaded files</text>
 
     <rect x="650" y="720" width="300" height="110" rx="16" fill="#FFF1F2" stroke="#BE123C" stroke-width="2.5"/>
-    <text x="800" y="768" text-anchor="middle" class="h">Celery Worker</text>
-    <text x="800" y="798" text-anchor="middle" class="d">Runs background jobs</text>
+    <text x="800" y="760" text-anchor="middle" class="h">Celery Worker</text>
+    <text x="800" y="788" text-anchor="middle" class="v">Celery 5.6</text>
+    <text x="800" y="812" text-anchor="middle" class="d">Runs background jobs</text>
   </g>
 
   <!-- legend -->
@@ -93,6 +101,6 @@
   <line class="job" x1="64" y1="780" x2="140" y2="780" marker-end="url(#o)"/>
   <text x="156" y="786" class="lg">Background job</text>
 
-  <text x="64" y="866" class="note">Frontend only serves static files — the browser calls the Backend API directly. File bytes never pass through the backend: the API returns a pre-signed URL</text>
+  <text x="64" y="866" class="note">CARE Frontend only serves static files — the browser calls CARE Backend directly. File bytes never pass through the backend: the API returns a pre-signed URL</text>
   <text x="64" y="888" class="note">and the browser uploads / downloads straight to storage. Beat also runs DB migrations on startup.</text>
 </svg>

@@ -65,7 +65,7 @@
   .cover .r li{font:500 26px Switzer,sans-serif;margin:14px 0;list-style:none;color:#fff}
   .cover .r li::before{content:"/ ";color:var(--lime)}
   .diagram{flex:1;display:flex;align-items:center;justify-content:center}
-  .diagram img{max-width:100%;max-height:560px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+  .diagram img{max-width:100%;max-height:630px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
   a{color:inherit;text-decoration:underline;text-decoration-color:var(--teal-2);text-underline-offset:3px} .cover .r a{color:#fff;text-decoration-color:var(--lime)}
   table.compact{font-size:17px} table.compact td{padding:7px 10px}
   .note{border:1px solid var(--line);border-left:4px solid var(--teal);background:#fff;padding:14px 20px;border-radius:10px;font-size:19px}
@@ -91,27 +91,10 @@
 <section class="slide">
   <div class="kicker">Infra requirements · Tech stack</div>
   <h1>How the pieces talk to each other</h1>
-  <div class="diagram"><img src="tech-stack-runtime-diagram-v6.svg" alt="CARE runtime diagram"></div>
-  <p class="src">Browser loads the React bundle from Nginx, then calls the Django API. For files, the API returns a pre-signed URL and the browser uploads/downloads directly to object storage — file bytes never pass through the backend. Celery workers read/write storage directly. Beat is the single scheduler.</p>
+  <div class="diagram"><img src="tech-stack-runtime-diagram-v6.svg?v=2" alt="CARE runtime diagram"></div>
 </section>
 
 <!-- 3 -->
-<section class="slide">
-  <div class="kicker">Infra requirements · Tech stack</div>
-  <h1>Technology per component</h1>
-  <table>
-    <tr><th>Component</th><th>Technology</th><th>What it does</th></tr>
-    <tr><td><b>CARE Frontend</b></td><td>React 19</td><td>The web app users see</td></tr>
-    <tr><td><b>CARE Backend</b></td><td>Django 6.0 (Python 3.13)</td><td>Handles all requests and business logic</td></tr>
-    <tr><td><b>Celery Worker</b></td><td>Celery 5.6</td><td>Runs background jobs</td></tr>
-    <tr><td><b>Celery Beat</b></td><td>Celery 5.6</td><td>Schedules recurring jobs (only one runs)</td></tr>
-    <tr><td><b>PostgreSQL</b></td><td>PostgreSQL 17</td><td>Stores patient and app data</td></tr>
-    <tr><td><b>Redis</b></td><td>Redis 8</td><td>Cache and job queue</td></tr>
-    <tr><td><b>Object storage</b></td><td>Any S3-compatible storage (GCS on GCP)</td><td>Stores uploaded files</td></tr>
-  </table>
-</section>
-
-<!-- 4 -->
 <section class="slide">
   <div class="kicker">Infra requirements · Deployment modes</div>
   <h1>Container-based, runs anywhere</h1>
@@ -127,7 +110,7 @@
   </div>
 </section>
 
-<!-- 5 -->
+<!-- 4 -->
 <section class="slide">
   <div class="kicker">Infra requirements · gcp_template</div>
   <h1>The official GCP blueprint</h1>
@@ -140,7 +123,7 @@
   </div>
 </section>
 
-<!-- 6 -->
+<!-- 5 -->
 <section class="slide">
   <div class="kicker">Infra requirements · Components</div>
   <h1>Core vs optional components</h1>
@@ -156,7 +139,7 @@
   </div>
 </section>
 
-<!-- 7 -->
+<!-- 6 -->
 <section class="slide">
   <div class="kicker">Infra requirements · Hardware</div>
   <h1>Per-component resources</h1>
@@ -164,7 +147,7 @@
   <p class="src">CPU / memory = what to reserve per copy (Helm chart requests). Actual use is from running instances. Leave headroom — the backend can burst to 1.5 vCPU / 2 GB per copy.</p>
 </section>
 
-<!-- 8 -->
+<!-- 7 -->
 <section class="slide">
   <div class="kicker">Infra requirements · Sizing</div>
   <h1>What real instances run today</h1>
@@ -172,7 +155,7 @@
   <div class="note" style="margin-top:22px"><b>Takeaway:</b> a full CARE HMIS instance runs today on about <b>9–13 vCPU and 32–48 GB of memory</b> in total, including the database. Most of it sits idle — CPU use stays under 25%.</div>
 </section>
 
-<!-- 9 -->
+<!-- 8 -->
 <section class="slide">
   <div class="kicker">Infra requirements · Sizing</div>
   <h1>Baseline to start with</h1>
@@ -184,7 +167,7 @@
   <p class="src">These are the defaults we ship and they work in most cases. You are free to change node size and per-component resources to fit your load.</p>
 </section>
 
-<!-- 10 -->
+<!-- 9 -->
 <section class="slide">
   <div class="kicker">Scoping &amp; provisioning</div>
   <h1>Autoscaling with HPA</h1>
@@ -196,7 +179,7 @@
   <figure style="margin:22px 0 0"><img src="celery-worker-hpa-sample.png" alt="Celery worker replicas over a day" style="width:100%;max-height:300px;object-fit:contain;border-radius:10px"><figcaption class="src">Example from a live instance: workers sit at 2 overnight, scale up to 8 from about 10 AM as tasks queue up, and drop back to 2 by mid-afternoon.</figcaption></figure>
 </section>
 
-<!-- 11 -->
+<!-- 10 -->
 <section class="slide">
   <div class="kicker">Scoping &amp; provisioning</div>
   <h1>Checklist</h1>
@@ -206,7 +189,7 @@
   </div>
 </section>
 
-<!-- 12 -->
+<!-- 11 -->
 <section class="slide">
   <div class="kicker">Costing estimations</div>
   <h1>Monthly cost of one gcp_template instance</h1>
@@ -215,7 +198,7 @@
   <p class="src">Estimate from Google list prices (asia-south1) × provisioned resources. Not a billing export.</p>
 </section>
 
-<!-- 13 -->
+<!-- 12 -->
 <section class="slide">
   <div class="kicker">Environment setup · Staging</div>
   <h1>Staging: configure, test, train</h1>
@@ -232,7 +215,7 @@
   </div>
 </section>
 
-<!-- 14 -->
+<!-- 13 -->
 <section class="slide">
   <div class="kicker">Environment setup · Production</div>
   <h1>Production: an approved copy of staging</h1>
@@ -250,7 +233,7 @@
   </div>
 </section>
 
-<!-- 15 -->
+<!-- 14 -->
 <section class="slide">
   <div class="kicker">Environment setup · Metabase</div>
   <h1>Dashboards with Metabase</h1>
@@ -260,7 +243,7 @@
   </div>
 </section>
 
-<!-- 16 -->
+<!-- 15 -->
 <section class="slide cover">
   <div class="l"><div class="kicker">Recap</div><h1>Start small, scale on signals</h1>
     <p class="muted">3 small nodes + a 2-vCPU Postgres runs a real state HMIS today. Use HPA for API and workers, promote staging → production by commit, and add Metabase only when you need analytics.</p></div>
