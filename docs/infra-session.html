@@ -243,9 +243,8 @@
   <h1>Dashboards with Metabase</h1>
   <div class="grid g2">
     <div class="card"><h2>Optional — only for analytics</h2><ul><li>Needs its own small database to store dashboards, questions and users — on GCP we provision a separate Cloud SQL instance for it</li><li>Runs as a single pod and is memory-heavy: plan about 2 GB RAM (live instances use ~1.4 GB)</li><li>Installed from the <a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/metabase" target="_blank" rel="noopener">metabase chart</a>, served on its own subdomain</li></ul></div>
-    <div class="card t"><h2>Connect to CARE data — two ways</h2><ol style="padding-left:26px"><li><b>Read replica</b> (GCP default): Cloud SQL replica, reporting never loads the primary</li><li><b>Read-only SQL user</b> on the CARE DB — simpler, works anywhere, including on-prem</li></ol></div>
+    <div class="card t"><h2>Connect to CARE data — two ways</h2><ol style="padding-left:26px"><li><b>Read replica</b> (GCP default): Cloud SQL replica, reporting never loads the primary</li><li><b>Read-only SQL user</b> on the CARE DB — simpler, works anywhere, including on-prem</li></ol><p style="margin:10px 0 0">Prefer the replica for heavy dashboards.</p></div>
   </div>
-  <div class="note" style="margin-top:22px">Never give Metabase a read-write user. Prefer the replica for heavy dashboards.</div>
 </section>
 
 <!-- 16 -->
