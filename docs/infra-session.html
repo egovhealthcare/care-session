@@ -188,8 +188,8 @@
   <div class="kicker">Scoping &amp; provisioning</div>
   <h1>Checklist</h1>
   <div class="grid g2">
-    <div class="card"><h2>Scope</h2><ul><li>Number of facilities, users, go-live phases</li><li>Modules and plugs (ABDM, scribe, DICOM, payments)</li><li>Analytics needed? → Metabase</li><li>Hosting: cloud / on-prem, data residency</li><li>Domains: web, API, Metabase, DICOM</li></ul></div>
-    <div class="card t"><h2>Provision</h2><ul><li>GCP project, billing, state bucket</li><li>tfvars → Secret Manager (<code>tofu-tfvars-&lt;env&gt;</code>)</li><li>Apply pre-infra → KMS → infra → deploy</li><li>Node pool, DB tier, replicas, HPA limits</li><li>DNS + TLS, Cloud Armor, alert emails</li><li>Backups / PITR verified, restore tested</li></ul></div>
+    <div class="card"><h2>Decide first</h2><ul><li>Environments: dev, staging, QA, production</li><li>Where it runs: GCP, AWS, any other cloud, or on-prem</li><li>Optional components: Metabase, DICOM, AI scribe</li><li>Plugs and features needed</li><li>Domains: every public component gets its own subdomain (web, API, Metabase, DICOM)</li></ul></div>
+    <div class="card t"><h2>Set up</h2><ul><li>Cloud project and billing</li><li>Fill in the config and run the <a href="https://github.com/egovhealthcare/gcp_template" target="_blank" rel="noopener">gcp_template</a> modules in order</li><li>Pick node size, database size and autoscaling limits</li><li>DNS and HTTPS for each subdomain, alert emails</li><li>Backups verified, restore tested</li><li>Guard against accidental deletion: GCP organisation policies and deletion protection (other clouds have similar safeguards)</li></ul></div>
   </div>
 </section>
 
