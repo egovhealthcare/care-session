@@ -4,10 +4,3 @@ care_fe/
 care-backups/
 .DS_Store
 *.log
-slides/node_modules/
-slides/dist/
-slides/*.svg
-slides/public/
-docs/operator-slides/
-care-operator-workshop.pdf
-care-session-3-skeleton.pdf

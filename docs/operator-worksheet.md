@@ -1,6 +1,6 @@
 # CARE instance: operator worksheet
 
-Use this with [Session 3 slides](session-3-slides.md) and the [local setup instructions](../README.md). Record evidence or **unknown**; a successful container start is not a completed exercise. This lab uses synthetic records and local demo credentials only. Do not copy its configuration into a real service.
+Use this with [Session 3 slides](https://jesbinjoseph.github.io/care-session/) and the [local setup instructions](../README.md). Record evidence or **unknown**; a successful container start is not a completed exercise. This lab uses synthetic records and local demo credentials only. Do not copy its configuration into a real service.
 
 ## 1. What are we hosting?
 

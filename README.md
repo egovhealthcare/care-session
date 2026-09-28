@@ -247,29 +247,14 @@ This repository is a learning environment, not a production deployment template.
 - Tested backup, restore, rollback, and recovery procedures
 - Pinned and approved release artifacts
 
-## Workshop presentations and website
+## Presentation
 
-Use the [guided CARE deployment workshop](https://jesbinjoseph.github.io/care-session/) during the session. It includes copyable commands, local verification, daily checks, hosting choices, and the owner-assigned worksheet.
-
-The canonical presentation is [Session 3 Markdown slides](docs/session-3-slides.md). To present or rebuild it with Slidev (requires Node and npm):
-
-```bash
-cd slides
-npm ci
-npm run dev
-# or: npm run build
-```
-
-`slides/slides.md` is a symlink to the canonical Markdown; edit `docs/session-3-slides.md` only. The [older standalone HTML deck](docs/session-3-canva-style.html) is retained for reference and **does not reflect this operator-focused revision**. The Slidev build output is generated locally and not committed.
-
-For a shorter presenter-led version, edit the [eight-slide skeleton](slides/skeleton.md) and run `npm run dev:skeleton` or `npm run export:skeleton` from `slides/`. Its PDF is generated locally and not committed; the full workshop deck remains available above.
+The Session 3 deck is published with GitHub Pages at <https://jesbinjoseph.github.io/care-session/> (source: [docs/index.html](docs/index.html)). Use `#N` to jump to a slide. Pages serves the `docs/` folder on `main`, so pushing is the only deploy step.
 
 ## Additional material
 
-- [Session 3 Markdown slides](docs/session-3-slides.md)
 - [Operator worksheet](docs/operator-worksheet.md)
-- [Earlier HTML slides (not updated for this revision)](docs/session-3-canva-style.html)
-- [Workshop website source](docs/index.html)
+- [Session 3 presentation](https://jesbinjoseph.github.io/care-session/)
 - [Architecture explanation](docs/architecture.md)
 - [CARE on a simple Kubernetes cluster](docs/kubernetes-local-architecture.md)
 - [Recommended managed-services GCP architecture](docs/gcp-managed-architecture.md)

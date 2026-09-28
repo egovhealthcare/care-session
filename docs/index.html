@@ -1,266 +1,274 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A guided workshop to host, verify, operate, and plan your own CARE instance.">
-  <meta name="theme-color" content="#020617">
-  <title>CARE Deployment Workshop</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Roboto+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/styles.css">
+<meta charset="utf-8">
+<title>CARE HMIS — Infrastructure & Environments</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#12806A; --teal-2:#0F8B6C; --teal-soft:#EEF6F1; --navy:#052E24; --forest:#173D34;
+    --lime:#B8F36F; --ink:#0B1220; --muted:#4B5563; --line:#DDE5E0; --amber:#12806A; --bg:#F7F9F6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:#052E24;font-family:Switzer,system-ui,sans-serif;color:var(--ink)}
+  .deck{position:relative;width:100vw;height:100vh;overflow:hidden}
+  .slide{position:absolute;inset:0;margin:auto;width:1600px;height:900px;display:none;flex-direction:column;padding:64px 88px 56px;transform-origin:center center;
+    background:
+      radial-gradient(900px 500px at 0% 0%,rgba(18,128,106,.10),transparent 60%),
+      radial-gradient(900px 500px at 100% 0%,rgba(184,243,111,.14),transparent 60%),
+      linear-gradient(rgba(5,46,36,.045) 1px,transparent 1px) 0 0/48px 48px,
+      linear-gradient(90deg,rgba(5,46,36,.045) 1px,transparent 1px) 0 0/48px 48px,
+      var(--bg)}
+  .slide.active{display:flex}
+  .kicker{align-self:flex-start;font:600 14px Switzer,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);
+    background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 14px;margin-bottom:16px;box-shadow:0 1px 2px rgba(5,46,36,.06)}
+  .kicker::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--teal);margin-right:9px;vertical-align:1px}
+  h1{font:700 56px/1.02 "Bricolage Grotesque",sans-serif;letter-spacing:-.03em;color:var(--ink);margin-bottom:28px}
+  h2{font:600 23px Switzer,sans-serif;color:var(--ink);margin-bottom:12px;letter-spacing:-.01em}
+  p,li{font-size:21px;line-height:1.5;color:#1F2937}
+  ul,ol{padding-left:24px} li{margin:6px 0} li::marker{color:var(--teal)}
+  .muted{color:var(--muted)}
+  .grid{display:grid;gap:22px;flex:1}
+  .g2{grid-template-columns:1fr 1fr} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+  .card{border:1px solid var(--line);border-radius:12px;padding:24px 26px;background:#fff;box-shadow:0 1px 2px rgba(5,46,36,.05),0 8px 24px -12px rgba(5,46,36,.12)}
+  .card.t{background:var(--navy);border-color:var(--navy)}
+  .card.t h2,.card.t h2 a{color:var(--lime)} .card.t li,.card.t p{color:#E7F2EC} .card.t li::marker{color:var(--lime)}
+  .card.t code{background:rgba(184,243,111,.14);color:var(--lime)} .card.t a{color:#fff;text-decoration-color:var(--lime)}
+  .card.t .big{color:#fff}
+  .card h2{font-size:21px}
+  .card li,.card p{font-size:18.5px}
+  table{border-collapse:separate;border-spacing:0;width:100%;font-size:19px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th{font:600 14px Switzer,sans-serif;text-transform:uppercase;letter-spacing:.07em;color:var(--lime);background:var(--navy);text-align:left;padding:12px 14px}
+  td{padding:11px 14px;border-bottom:1px solid var(--line)}
+  tr:last-child td{border-bottom:0}
+  tr:nth-child(even) td{background:#F7FAF8}
+  code{font:500 .88em ui-monospace,Menlo,monospace;background:var(--teal-soft);color:var(--teal);padding:2px 7px;border-radius:6px}
+  .foot{position:absolute;left:88px;right:88px;bottom:22px;display:flex;justify-content:space-between;font:500 14px Switzer,sans-serif;color:var(--muted)}
+  .src{font-size:15px;color:var(--muted);margin-top:14px}
+  .pill{display:inline-block;font:600 15px Switzer,sans-serif;padding:8px 16px;border-radius:8px;background:var(--navy);color:#fff;margin-right:8px}
+  .pill.o{background:#fff;color:var(--forest);border:1px solid var(--line)}
+  .flow{display:flex;align-items:center;gap:12px;margin:10px 0 18px}
+  .flow .step{flex:1;text-align:center;border:1px solid var(--line);border-radius:12px;padding:16px 10px;background:#fff;font:600 18px Switzer,sans-serif;color:var(--ink);box-shadow:0 1px 2px rgba(5,46,36,.05)}
+  .flow .step:last-child{background:var(--navy);color:#fff;border-color:var(--navy)} .flow .step:last-child small{color:var(--lime)}
+  .flow .step small{display:block;font:400 15px Switzer,sans-serif;color:var(--muted);margin-top:4px}
+  .flow .arr{font:600 26px Switzer,sans-serif;color:var(--teal)}
+  .big{font:700 42px "Bricolage Grotesque",sans-serif;letter-spacing:-.02em;color:var(--teal)}
+  /* title / closing */
+  .cover{padding:0;flex-direction:row}
+  .cover .l{flex:1.15;padding:120px 96px;display:flex;flex-direction:column;justify-content:center}
+  .cover .r{flex:1;background:var(--navy);color:#fff;padding:120px 80px;display:flex;flex-direction:column;justify-content:center;
+    background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:48px 48px}
+  .cover h1{font-size:88px;letter-spacing:-.04em}
+  .cover .r li{font:500 26px Switzer,sans-serif;margin:14px 0;list-style:none;color:#fff}
+  .cover .r li::before{content:"/ ";color:var(--lime)}
+  .diagram{flex:1;display:flex;align-items:center;justify-content:center}
+  .diagram img{max-width:100%;max-height:630px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+  a{color:inherit;text-decoration:underline;text-decoration-color:var(--teal-2);text-underline-offset:3px} .cover .r a{color:#fff;text-decoration-color:var(--lime)}
+  table.compact{font-size:17px} table.compact td{padding:7px 10px}
+  .note{border:1px solid var(--line);border-left:4px solid var(--teal);background:#fff;padding:14px 20px;border-radius:10px;font-size:19px}
+.oss{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:999px;background:var(--teal-soft);color:var(--teal);font-size:.72em;font-weight:600;white-space:nowrap}
+.cmd{background:rgba(0,0,0,.28);color:#D9F99D;font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;padding:12px 14px;border-radius:10px;white-space:pre;overflow:hidden;margin:8px 0 0}
+</style>
 </head>
 <body>
-  <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
-  <header class="topbar">
-    <a class="brand" href="#start" aria-label="CARE Deployment Workshop home">
-      <span class="brand-mark">C</span>
-      <span><strong>CARE</strong><small>Deployment workshop</small></span>
-    </a>
-    <nav class="top-actions" aria-label="Page controls">
-      <span class="step-counter"><span id="current-step">1</span> / <span id="total-steps">10</span></span>
-      <button class="button button-quiet" id="present-button" type="button" aria-pressed="false">Present</button>
-      <a class="button button-primary" href="https://github.com/jesbinjoseph/care-session" target="_blank" rel="noopener noreferrer">Repository ↗</a>
-    </nav>
-  </header>
+<div class="deck" id="deck">
 
-  <aside class="rail" aria-label="Workshop sections">
-    <p class="rail-label">Workshop path</p>
-    <nav id="section-nav">
-      <a href="#start"><span>01</span>Start</a>
-      <a href="#local-model"><span>02</span>Local model</a>
-      <a href="#prepare"><span>03</span>Prepare</a>
-      <a href="#run"><span>04</span>Run</a>
-      <a href="#verify"><span>05</span>Verify</a>
-      <a href="#trace"><span>06</span>Manage</a>
-      <a href="#plugs"><span>07</span>Plugs</a>
-      <a href="#bridge"><span>08</span>Choose a host</a>
-      <a href="#gcp"><span>09</span>Platform example</a>
-      <a href="#ready"><span>10</span>Readiness</a>
-    </nav>
-    <div class="rail-note">
-      <span class="status-dot"></span>
-      <p><strong>Workshop boundary</strong><br>Local credentials and synthetic data only.</p>
-    </div>
-  </aside>
+<!-- 1 -->
+<section class="slide cover">
+  <div class="l">
+    <div class="kicker">CARE HMIS · Session</div>
+    <h1>Infrastructure &amp; Environments</h1>
+    <p class="muted">CARE Fundamentals Webinar Series  ·  Session 3</p>
+  </div>
+  <div class="r"><ul>
+    <li>Tech stack &amp; deployment modes</li><li>Components</li><li>Hardware &amp; sizing</li>
+    <li>Scaling &amp; provisioning checklist</li><li>Cost estimates</li><li>Staging → Production</li><li>Metabase dashboards</li>
+  </ul></div>
+</section>
 
-  <main>
-    <section class="section hero" id="start" data-title="Start">
-      <div class="eyebrow">CARE Fundamentals · Session 3</div>
-      <div class="hero-grid">
-        <div>
-          <h1>Host CARE yourself.<br><em>Know how to keep it running.</em></h1>
-          <p class="lead">Build and verify a safe local instance, then design a hosting and operations plan your team can own.</p>
-          <div class="hero-actions">
-            <a class="button button-primary button-large" href="#local-model">Begin workshop ↓</a>
-            <a class="text-link" href="operator-worksheet.md">Open operator worksheet ↗</a>
-          </div>
-        </div>
-        <ol class="journey" aria-label="Learning journey">
-          <li><span>01</span><div><strong>Run</strong><small>Build the complete local stack</small></div></li>
-          <li><span>02</span><div><strong>Verify</strong><small>Prove records and files work</small></div></li>
-          <li><span>03</span><div><strong>Manage</strong><small>Check, troubleshoot, preserve and recover</small></div></li>
-          <li><span>04</span><div><strong>Plan</strong><small>Choose a host and name the operators</small></div></li>
-        </ol>
-      </div>
-      <div class="outcome-bar">
-        <span>Outcome</span>
-        <p>Participants can start CARE locally, verify the application, and leave with an owner-assigned hosting and operations plan.</p>
-      </div>
-    </section>
+<!-- 2 -->
+<section class="slide">
+  <div class="kicker">Infra requirements · Tech stack</div>
+  <h1>How the pieces talk to each other</h1>
+  <div class="diagram"><img src="tech-stack-runtime-diagram-v6.svg?v=2" alt="CARE runtime diagram"></div>
+</section>
 
-    <section class="section" id="local-model" data-title="Local model">
-      <div class="section-heading">
-        <div><span class="kicker">02 · Mental model</span><h2>Start with one machine</h2></div>
-        <p>Keep the architecture small enough to trace, without hiding the runtime roles CARE needs.</p>
-      </div>
-      <figure class="diagram-frame">
-        <img src="architecture.svg" alt="CARE local Docker Compose architecture showing browser, frontend, shared backend image, PostgreSQL, Silo and Redis">
-        <figcaption><span>Local Compose architecture</span><a href="architecture.svg" target="_blank" rel="noopener noreferrer">Open full size ↗</a></figcaption>
-      </figure>
-      <div class="role-strip">
-        <article><span class="role ui">UI</span><strong>Frontend</strong><p>Serves the browser application on port 4000.</p></article>
-        <article><span class="role care">CARE</span><strong>API · Worker · Beat</strong><p>Three roles built from one plug-enabled image.</p></article>
-        <article><span class="role data">DATA</span><strong>PostgreSQL · Silo</strong><p>Relational records and uploaded objects.</p></article>
-        <article><span class="role task">TASKS</span><strong>Redis</strong><p>Cache and Celery task transport.</p></article>
-      </div>
-    </section>
+<!-- 3 -->
+<section class="slide">
+  <div class="kicker">Infra requirements · Deployment modes</div>
+  <h1>Container-based, runs anywhere</h1>
+  <div class="grid g3">
+    <div class="card t"><h2>Cloud</h2><ul><li>Deployed on <b>GCP, AWS, DigitalOcean</b></li><li>Official path: <b>GKE</b> + Cloud SQL + GCS via <a href="https://github.com/egovhealthcare/gcp_template" target="_blank" rel="noopener"><code>gcp_template</code></a></li><li>AWS example: ECS + Aurora PostgreSQL + ElastiCache + S3 via <a href="https://github.com/ohcnetwork/care-ecs-tofu" target="_blank" rel="noopener"><code>care-ecs-tofu</code></a></li><li>Monitoring on GCP: Google Managed Prometheus</li><li>Managed DB / storage recommended</li></ul></div>
+    <div class="card"><h2>On-premise</h2><ul><li>Same images on a hospital / state server</li><li>Docker Compose (like this workshop) or self-managed Kubernetes</li><li>The full stack can run on your own servers</li><li>Host your own monitoring and logging</li><li>You own backups, patching, TLS</li></ul></div>
+    <div class="card"><h2>Connectivity</h2><ul><li>Users reach FE + API over HTTPS</li><li>DB and Redis stay private — never public</li><li>Outbound internet for plugs (ABDM, SMS, email) and image pulls</li><li>On GCP, outbound traffic leaves via Cloud NAT with a static IP — easy to allow-list with partners and third-party services</li><li>CARE Frontend is static files: host it anywhere. We run it in Kubernetes to share the API gateway IP</li></ul></div>
+  </div>
+  <div class="flow" style="margin-top:26px">
+    <div class="step">Docker<small>docker compose</small></div><div class="arr">→</div>
+    <div class="step">Kubernetes<small>Helm charts</small></div><div class="arr">→</div>
+    <div class="step">GKE<small><a href="https://github.com/egovhealthcare/gcp_template" target="_blank" rel="noopener">gcp_template</a> (OpenTofu + Helm)</small></div>
+  </div>
+</section>
 
-    <section class="section" id="prepare" data-title="Prepare">
-      <div class="section-heading">
-        <div><span class="kicker">03 · Local setup</span><h2>Prepare the source</h2></div>
-        <p>Clone the workshop and the two upstream CARE repositories, then create local-only configuration.</p>
-      </div>
-      <div class="command-sequence">
-        <article class="command-card">
-          <div class="command-meta"><span>1</span><div><strong>Workshop repository</strong><small>Clone and enter the project</small></div></div>
-          <pre><code>git clone https://github.com/jesbinjoseph/care-session.git
-cd care-session</code></pre>
-        </article>
-        <article class="command-card">
-          <div class="command-meta"><span>2</span><div><strong>CARE source</strong><small>Build frontend and backend from upstream</small></div></div>
-          <pre><code>git clone --depth 1 --branch develop https://github.com/ohcnetwork/care.git
-git clone --depth 1 --branch develop https://github.com/ohcnetwork/care_fe.git</code></pre>
-        </article>
-        <article class="command-card">
-          <div class="command-meta"><span>3</span><div><strong>Local configuration</strong><small>Demo credentials only</small></div></div>
-          <pre><code>test -f .env || cp .env.example .env
-cp frontend.env.production.local care_fe/.env.production.local</code></pre>
-        </article>
-      </div>
-      <div class="callout caution"><strong>Safety boundary</strong><p>Use synthetic records only. Never connect this workshop stack to production databases, buckets, Redis instances, APIs or credentials.</p></div>
-    </section>
+<!-- 4 -->
+<section class="slide">
+  <div class="kicker">Infra requirements · gcp_template</div>
+  <h1>The official GCP blueprint</h1>
+  <div class="grid g2">
+    <div class="card t"><h2>OpenTofu modules — applied in order</h2>
+      <ol style="padding-left:26px"><li><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/pre-infra" target="_blank" rel="noopener"><code>pre-infra/</code></a> — APIs, optional DNS zone</li><li><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/KMS" target="_blank" rel="noopener"><code>KMS/</code></a> — key ring &amp; keys</li><li><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/infra" target="_blank" rel="noopener"><code>infra/</code></a> — VPC, GKE, Cloud SQL, GCS, Cloud Armor, GitHub WIF</li><li><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/deploy" target="_blank" rel="noopener"><code>deploy/</code></a> — namespace, secrets, Helm releases</li></ol>
+      <p class="src">tfvars live in Secret Manager as <code>tofu-tfvars-&lt;env&gt;</code>; never in git.</p>
+      <h2 style="margin-top:22px">Run in each module folder</h2>
+      <p style="margin:6px 0 0">The full infrastructure deploys in under an hour.</p>
+      <pre class="cmd">export BACKEND_BUCKET=&lt;state-bucket&gt;
+export PROJECT_ID=&lt;project&gt;
+export ENV_NAME=&lt;env&gt;
 
-    <section class="section" id="run" data-title="Run">
-      <div class="section-heading">
-        <div><span class="kicker">04 · Build and start</span><h2>Bring CARE up</h2></div>
-        <p>Resolve the service graph first. Then build and wait for each dependency to become healthy.</p>
-      </div>
-      <div class="split">
-        <div>
-          <h3>Review the stack</h3>
-          <pre><code>docker info
-docker compose version
-docker compose config --services
-docker compose config --quiet</code></pre>
-          <p class="note">Expected roles: <code>db</code>, <code>redis</code>, <code>silo</code>, <code>beat</code>, <code>backend</code>, <code>worker</code>, <code>frontend</code>.</p>
-        </div>
-        <div>
-          <h3>Build and start</h3>
-          <pre class="accent-code"><code>docker compose up -d --build --wait</code></pre>
-          <p class="note">The first run downloads base images and builds both CARE repositories.</p>
-        </div>
-      </div>
-      <div class="startup-flow" aria-label="CARE startup order">
-        <div><span>1</span><strong>Data services</strong><small>PostgreSQL · Redis · Silo</small></div>
-        <i>→</i>
-        <div><span>2</span><strong>Celery Beat</strong><small>Migrate · sync · become healthy</small></div>
-        <i>→</i>
-        <div><span>3</span><strong>Application</strong><small>Backend · worker · frontend</small></div>
-      </div>
-    </section>
+make init
+make pull-tfvars
+make plan
+make deploy</pre>
+      <p class="src">From the <a href="https://github.com/egovhealthcare/gcp_template#common-commands" target="_blank" rel="noopener">gcp_template README</a>.</p></div>
+    <div class="card"><h2>Helm charts — what each installs</h2>
+      <table class="compact"><tr><td><b><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/care_be" target="_blank" rel="noopener">care_be</a></b></td><td>Backend API, Celery worker, Celery Beat (+ HPAs)</td></tr><tr><td><b><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/care_fe" target="_blank" rel="noopener">care_fe</a></b></td><td>Frontend (Nginx serving the React app)</td></tr><tr><td><b><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/redis" target="_blank" rel="noopener">redis</a></b></td><td>Redis 8 — cache and job queue <span class="oss">open source</span></td></tr><tr><td><b><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/gateway" target="_blank" rel="noopener">gateway</a></b></td><td>Gateway API load balancer, HTTPS, Let's Encrypt certificate</td></tr><tr><td><b><a href="https://github.com/cert-manager/cert-manager" target="_blank" rel="noopener">cert-manager</a></b></td><td>Issues and renews TLS certificates (upstream Jetstack chart) <span class="oss">open source</span></td></tr><tr><td><b><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/metabase" target="_blank" rel="noopener">metabase</a></b></td><td>Metabase analytics dashboards <span class="oss">open source</span></td></tr><tr><td><b><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/care_metrics_exporter" target="_blank" rel="noopener">care_metrics_exporter</a></b></td><td>Exports Celery queue depth to Prometheus</td></tr><tr><td><b><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/dcm4chee" target="_blank" rel="noopener">dcm4chee</a></b></td><td>DICOM server + OHIF viewer (only if <code>enable_dicom</code>) <span class="oss">open source</span></td></tr></table>
+      <p class="src"><span class="oss">open source</span> = community projects we package and configure, not built by us.</p></div>
+  </div>
+</section>
 
-    <section class="section" id="verify" data-title="Verify">
-      <div class="section-heading">
-        <div><span class="kicker">05 · Evidence</span><h2>Prove the stack works</h2></div>
-        <p>Container startup is not completion. Verify application health and keep the output as workshop evidence.</p>
-      </div>
-      <div class="verify-grid">
-        <div>
-          <pre><code>docker compose ps -a
+<!-- 5 -->
+<section class="slide">
+  <div class="kicker">Infra requirements · Components</div>
+  <h1>Core vs optional components</h1>
+  <div class="grid g4">
+    <div class="card t"><h2>Frontend</h2><p>React SPA on Nginx. Required.</p></div>
+    <div class="card t"><h2>Backend</h2><p>API + Worker + Beat from one image. Required.</p></div>
+    <div class="card t"><h2>PostgreSQL</h2><p>Primary DB (+ read replica on GCP). Required.</p></div>
+    <div class="card t"><h2>Redis + Storage</h2><p>Broker/cache and file store. Required.</p></div>
+    <div class="card"><h2>Metabase</h2><p>Analytics dashboards, own metadata DB. Optional.</p></div>
+    <div class="card"><h2>AI engine</h2><p>Works with any OpenAI-compatible model endpoint. On GCP deployments we use <a href="https://github.com/egovhealthcare/gcp_template/blob/HEAD/infra/scribe.tf" target="_blank" rel="noopener">Vertex AI</a> with models hosted in India. Optional.</p></div>
+    <div class="card"><h2>DICOM</h2><p><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/dcm4chee" target="_blank" rel="noopener"><code>dcm4chee</code></a> stores medical images (X-ray, CT, MRI) and lets clinicians view them in the browser. Optional.</p></div>
+    <div class="card"><h2>Plugs</h2><p>Django apps that add features to CARE without changing core code. Optional.</p><p>Sample: <a href="https://github.com/ohcnetwork/care_hello" target="_blank" rel="noopener">care_hello</a> · Enable: <a href="https://github.com/ohcnetwork/care/blob/develop/docs/development/pluggable-apps.md" target="_blank" rel="noopener">pluggable apps guide</a></p></div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+  <div class="kicker">Infra requirements · Hardware</div>
+  <h1>Per-component resources</h1>
+  <table class="compact"><tr><th>Component</th><th>Copies</th><th>CPU each</th><th>Memory each</th></tr><tr><td><b>Backend API</b></td><td>2</td><td>0.5 vCPU</td><td>1 GB</td></tr><tr><td><b>Celery Worker</b></td><td>1</td><td>0.5 vCPU</td><td>0.5 GB</td></tr><tr><td><b>Celery Beat</b></td><td>1</td><td>0.15 vCPU</td><td>0.25 GB</td></tr><tr><td><b>Frontend</b></td><td>2</td><td>0.1 vCPU</td><td>0.125 GB</td></tr><tr><td><b>Redis</b></td><td>1</td><td>0.1 vCPU</td><td>0.125 GB</td></tr><tr><td><b>PostgreSQL</b></td><td>1</td><td>2 vCPU</td><td>3.75 GB RAM + 10–15 GB SSD</td></tr><tr><td style="background:#F1FBE4"><b>Total — core CARE</b></td><td style="background:#F1FBE4"></td><td style="background:#F1FBE4"><b>~4 vCPU</b></td><td style="background:#F1FBE4"><b>~8 GB RAM + 15 GB SSD</b></td></tr><tr><td><b>Metabase (optional)</b></td><td>1</td><td>0.5 vCPU</td><td>1.5 GB</td></tr><tr><td><b>PostgreSQL read replica (optional)</b></td><td>1</td><td>1 vCPU</td><td>3.75 GB RAM + 10–15 GB SSD</td></tr><tr><td style="background:#F1FBE4"><b>Total — with analytics</b></td><td style="background:#F1FBE4"></td><td style="background:#F1FBE4"><b>~5.5 vCPU</b></td><td style="background:#F1FBE4"><b>~13 GB RAM + 30 GB SSD</b></td></tr></table>
+  <p class="src">CPU / memory = what to reserve per copy (Helm chart requests). Leave headroom — the backend can burst to 1.5 vCPU / 2 GB per copy.<br>PostgreSQL size is the same as the managed Cloud SQL instances we run today.</p>
+</section>
+
+<!-- 7 -->
+<section class="slide">
+  <div class="kicker">Infra requirements · Sizing &amp; cost</div>
+  <h1>Baseline to start with</h1>
+  <div class="grid g3">
+    <div class="card"><h2>Small</h2><p class="big">1 node · ~$230/mo</p><ul><li>Single-node cluster: 2 vCPU / 8 GB</li><li>Use the minimum resources in <a href="https://github.com/egovhealthcare/gcp_template/blob/HEAD/environments/sample.tfvars" target="_blank" rel="noopener"><code>sample.tfvars</code></a></li><li>1 copy of each service</li><li>Database: 2 vCPU / 3.75 GB, no replica</li><li>Cost based on our TeleICU staging</li></ul></div>
+    <div class="card t"><h2>District rollout</h2><p class="big">~10 vCPU · 40 GB · ~$400–600/mo</p><ul><li>Total for the whole instance, database included</li><li>2–4 API copies, 1–2 workers</li><li>Database + 1 read replica</li><li>Where most live instances run</li></ul></div>
+    <div class="card"><h2>Large deployment</h2><p class="big">Scaled on real usage</p><ul><li>Grow from the district setup based on how users actually use the platform</li><li>Autoscaling on API and workers</li><li>Add nodes, database size or high availability when metrics show the need</li><li>Cost grows with the resources you add</li></ul></div>
+  </div>
+  <div class="note" style="margin-top:16px"><b>Starting smaller:</b> one node, no read replica (point Metabase at a read-only DB user instead), or skip Metabase entirely.</div>
+  <p class="src">Defaults work in most cases; you are free to change node size and per-component resources. Costs: Google list prices (asia-south1) × provisioned resources, not a billing export.</p>
+</section>
+
+<!-- 9 -->
+<section class="slide">
+  <div class="kicker">Scoping &amp; provisioning</div>
+  <h1>Autoscaling with HPA</h1>
+  <p class="lead" style="margin-bottom:28px;color:var(--muted);max-width:1100px">Autoscaling is a built-in Kubernetes feature (Horizontal Pod Autoscaler). We use it to add or remove CARE backend and worker copies automatically based on usage. The defaults are a starting point — tune the min/max copies and the scaling trigger to match how your users actually use CARE.</p>
+  <div class="grid g2">
+    <div class="card t"><h2>Backend API</h2><ul><li>HPA on CPU, template default 2 → 6 pods at 80%</li><li><code>api_autoscaling_min/max_replicas</code> in <code>helm_config</code></li><li>Scale-down waits 15 min (<code>stabilizationWindowSeconds: 900</code>)</li></ul></div>
+    <div class="card t"><h2>Celery Worker</h2><ul><li>Same HPA pattern, default 2 → 6 at 80%</li><li>Live example: 2 → 8 pods at 60% CPU</li><li>Watch queue depth — the alert fires at &gt; 200 waiting tasks</li></ul></div>
+  </div>
+  <figure style="margin:22px 0 0"><img src="celery-worker-hpa-sample.png" alt="Celery worker replicas over a day" style="width:100%;max-height:270px;object-fit:contain;border-radius:10px"><figcaption class="src">Example from a live instance: workers sit at 2 overnight, scale up to 8 from about 10 AM as tasks queue up, and drop back to 2 by mid-afternoon.</figcaption></figure>
+</section>
+
+<!-- 10 -->
+<section class="slide">
+  <div class="kicker">Scoping &amp; provisioning</div>
+  <h1>Checklist</h1>
+  <div class="grid g2">
+    <div class="card"><h2>Decide first</h2><ul><li>Environments: dev, staging, QA, production</li><li>Where it runs: GCP, AWS, any other cloud, or on-prem</li><li>Optional components: Metabase, DICOM, AI features</li><li>Plugs and features needed</li><li>Domains: every public component gets its own subdomain (web, API, Metabase, DICOM)</li></ul></div>
+    <div class="card t"><h2>Set up</h2><ul><li>Cloud project and billing</li><li>Fill in the config and run the <a href="https://github.com/egovhealthcare/gcp_template" target="_blank" rel="noopener">gcp_template</a> modules in order</li><li>Pick node size, database size and autoscaling limits</li><li>DNS and HTTPS for each subdomain, alert emails</li><li>Backups verified, restore tested</li><li>Guard against accidental deletion: GCP organisation policies and deletion protection (other clouds have similar safeguards)</li></ul></div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="slide">
+  <div class="kicker">Environment setup · Staging</div>
+  <h1>Staging: configure, test, train</h1>
+  <div class="grid g2">
+    <div class="card t"><h2>Where everything happens first</h2><p style="margin:0 0 8px">Every change lands on staging first, then production — so no surprises in production.</p><ul><li>Dedicated GCP project with the full <a href="https://github.com/egovhealthcare/gcp_template" target="_blank" rel="noopener">gcp_template</a> stack</li><li>Builds from the <code>develop</code> ref of <a href="https://github.com/ohcnetwork/care" target="_blank" rel="noopener"><code>care</code></a> / <a href="https://github.com/ohcnetwork/care_fe" target="_blank" rel="noopener"><code>care_fe</code></a></li><li>New plugs, value sets, roles and config tested here</li><li>Training runs on staging, never production</li></ul></div>
+    <div class="card"><h2>How the <a href="https://github.com/jesbinjoseph/care-session/blob/main/deploy-states-sample/README.md" target="_blank" rel="noopener">deploy-states-sample</a> pipeline works</h2><ol><li><a href="https://github.com/jesbinjoseph/care-session/blob/main/deploy-states-sample/.github/workflows/build.yaml" target="_blank" rel="noopener">Build</a>: build <code>care</code> and <code>care_fe</code> images from the chosen commit, push to Artifact Registry</li><li><a href="https://github.com/jesbinjoseph/care-session/blob/main/deploy-states-sample/.github/workflows/deploy.yaml" target="_blank" rel="noopener">Deploy</a>: pick the environment and image tags</li><li>Check the images exist, else stop</li><li>Write the new tags into the environment's config (Secret Manager)</li><li>Run OpenTofu plan and open a GitHub issue with the plan</li><li>Wait for an approver to comment <code>approved</code> (or <code>denied</code>, or time out)</li><li>On approval, apply — the new version goes live</li></ol></div>
+  </div>
+  <div class="flow" style="margin-top:22px">
+    <div class="step">Edit env config<small>PR to deploy-states-sample</small></div><div class="arr">→</div>
+    <div class="step">Build<small>image tag</small></div><div class="arr">→</div>
+    <div class="step">Plan<small>OpenTofu</small></div><div class="arr">→</div>
+    <div class="step">Approve<small>“approved” comment</small></div><div class="arr">→</div>
+    <div class="step">Apply<small>staging live</small></div>
+  </div>
+</section>
+
+<!-- 13 -->
+<section class="slide">
+  <div class="kicker">Environment setup · Metabase</div>
+  <h1>Dashboards with Metabase</h1>
+  <div class="grid g2">
+    <div class="card"><h2>Optional — only for analytics</h2><ul><li>Needs its own small database to store dashboards, questions and users — on GCP we provision a separate Cloud SQL instance for it</li><li>Runs as a single pod and is memory-heavy: plan about 2 GB RAM (live instances use ~1.4 GB)</li><li>Installed from the <a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/metabase" target="_blank" rel="noopener">metabase chart</a>, served on its own subdomain</li><li>First-time setup (admin account, connecting a database): <a href="https://www.metabase.com/docs/latest/configuring-metabase/setting-up-metabase" target="_blank" rel="noopener">Metabase setup guide</a></li></ul></div>
+    <div class="card t"><h2>Connect to CARE data — two ways</h2><ol style="padding-left:26px"><li><b>Read replica</b> (GCP default): Cloud SQL replica, reporting never loads the primary</li><li><b>Read-only SQL user</b> on the CARE DB — simpler, works anywhere, including on-prem</li></ol><p style="margin:10px 0 0">Prefer the replica for heavy dashboards.</p></div>
+  </div>
+</section>
+
+<!-- local setup -->
+<section class="slide">
+  <div class="kicker">Hands-on · Local setup</div>
+  <h1>Run CARE on your own machine</h1>
+  <div class="grid g2">
+    <div class="card t"><h2>Steps</h2><pre class="cmd"># 1. Get the workshop repo + CARE sources
+git clone https://github.com/jesbinjoseph/care-session.git && cd care-session
+git clone --depth 1 -b develop https://github.com/ohcnetwork/care.git
+git clone --depth 1 -b develop https://github.com/ohcnetwork/care_fe.git
+
+# 2. Local config (never overwrite an existing .env)
+test -f .env || cp .env.example .env
+cp frontend.env.production.local care_fe/.env.production.local
+
+# 3. Build and start everything
+docker compose up -d --build --wait
+
+# 4. Check it works
 curl -f http://localhost:9000/ping/
-curl -I http://localhost:4000/
-docker compose exec backend python manage.py check</code></pre>
-          <div class="endpoint-list">
-            <a href="http://localhost:4000" target="_blank" rel="noopener noreferrer"><span>Frontend</span><code>localhost:4000</code></a>
-            <a href="http://localhost:9000/swagger/" target="_blank" rel="noopener noreferrer"><span>API docs</span><code>localhost:9000/swagger/</code></a>
-            <a href="http://localhost:9001" target="_blank" rel="noopener noreferrer"><span>Silo console</span><code>localhost:9001</code></a>
-          </div>
-        </div>
-        <div class="checklist" data-checklist="local">
-          <label><input type="checkbox"><span>PostgreSQL, Redis and Silo are healthy</span></label>
-          <label><input type="checkbox"><span>Beat completed migrations and synchronization</span></label>
-          <label><input type="checkbox"><span>Backend health endpoint succeeds</span></label>
-          <label><input type="checkbox"><span>Frontend returns an HTTP response</span></label>
-          <label><input type="checkbox"><span>Worker is running</span></label>
-          <label><input type="checkbox"><span>Django system check succeeds</span></label>
-          <button class="reset-checks" type="button">Reset checks</button>
-        </div>
-      </div>
-    </section>
+open http://localhost:4000
 
-    <section class="section" id="trace" data-title="Manage">
-      <div class="section-heading">
-        <div><span class="kicker">06 · Operate the instance</span><h2>What will you check and recover?</h2></div>
-        <p>Practice an operator routine and record results in the worksheet. A running container is not enough.</p>
-      </div>
-      <div class="flow-list">
-        <article><span>01</span><div><strong>Check</strong><p>API and frontend respond; Beat and worker are running</p></div></article>
-        <article><span>02</span><div><strong>Verify data</strong><p>Save and reopen a synthetic record; upload and retrieve a test file</p></div></article>
-        <article><span>03</span><div><strong>Diagnose</strong><p>Inspect the first failing dependency, then downstream logs</p></div></article>
-        <article><span>04</span><div><strong>Preserve</strong><p>Stop and restart; prove local data survives; plan a separate restore test</p></div></article>
-      </div>
-      <p class="note">For the synthetic workflow, follow the <a href="https://github.com/jesbinjoseph/care-session#7-load-synthetic-workshop-data">local fixture preparation</a> before signing in. It temporarily supplies a development-only dependency.</p>
-      <pre><code>docker compose ps -a
-docker compose logs --tail=200 beat
-docker compose logs --tail=200 backend worker</code></pre>
-    </section>
+# 5. Load demo data (synthetic, local only)
+docker compose exec backend python -m pip install \
+  --target /tmp/care-fixtures-deps 'Faker==38.2.0'
+docker compose exec -e PYTHONPATH=/tmp/care-fixtures-deps \
+  -e 'DJANGO_ALLOWED_HOSTS=["localhost","127.0.0.1","backend","testserver"]' \
+  backend python manage.py load_fixtures</pre></div>
+    <div class="card"><h2>What you get</h2><ul><li>Needs only Docker with Compose</li><li>7 services: frontend, backend, worker, beat, PostgreSQL, Redis, local S3 storage</li><li>Beat runs database migrations first, then backend and worker start</li><li>Frontend on <code>localhost:4000</code>, API on <code>localhost:9000</code></li><li>Demo data is fake — never load fixtures on a real instance</li><li>Stop with <code>docker compose down</code> — your data is kept</li><li>Full guide: <a href="https://github.com/jesbinjoseph/care-session#readme" target="_blank" rel="noopener">care-session README</a></li></ul></div>
+  </div>
+</section>
 
-    <section class="section" id="plugs" data-title="Plugs">
-      <div class="section-heading">
-        <div><span class="kicker">07 · Extend CARE</span><h2>Plugs live in the image</h2></div>
-        <p>Plugs are Django extensions installed at build time—not independent runtime services.</p>
-      </div>
-      <div class="image-model">
-        <div class="image-boundary">
-          <span>SHARED CARE IMAGE</span>
-          <div>Backend API</div><div>Celery worker</div><div>Celery Beat</div><div class="plug">CARE plugs</div>
-        </div>
-        <div class="image-copy">
-          <h3>One artifact, multiple roles</h3>
-          <p>The API, worker and Beat must run the same tested, plug-enabled image. Compose changes only the process entry point.</p>
-          <pre><code>ADDITIONAL_PLUGS=[]</code></pre>
-          <pre><code>docker compose build --no-cache backend worker beat
-docker compose up -d --wait</code></pre>
-        </div>
-      </div>
-    </section>
+<!-- 15 -->
+<section class="slide cover">
+  <div class="l"><div class="kicker">Recap</div><h1>Start small, scale on signals</h1></div>
+  <div class="r"><ul><li><a href="https://github.com/ohcnetwork/care" target="_blank" rel="noopener">github.com/ohcnetwork/care</a></li><li><a href="https://github.com/ohcnetwork/care_fe" target="_blank" rel="noopener">github.com/ohcnetwork/care_fe</a></li><li><a href="https://github.com/egovhealthcare/gcp_template" target="_blank" rel="noopener">github.com/egovhealthcare/gcp_template</a></li><li><a href="https://github.com/jesbinjoseph/care-session/blob/main/deploy-states-sample/README.md" target="_blank" rel="noopener">care-session/deploy-states-sample</a></li></ul></div>
+</section>
 
-    <section class="section" id="bridge" data-title="Choose a host">
-      <div class="section-heading">
-        <div><span class="kicker">08 · Hosting decision</span><h2>Choose the platform; keep the responsibilities</h2></div>
-        <p>A workstation, VM, server, or cluster can host an instance. For each role, decide who runs it, checks it, and restores it.</p>
-      </div>
-      <div class="translation-grid">
-        <div><code>frontend</code><span>→</span><strong>Build-time API URL · static serving · browser reachability</strong></div>
-        <div><code>backend · worker · beat</code><span>→</span><strong>Three supervised roles from one pinned image</strong></div>
-        <div><code>database · files · broker</code><span>→</span><strong>Compatible services · backups · named owners</strong></div>
-        <div><code>local ports</code><span>→</span><strong>DNS · TLS · restricted networking · alerting</strong></div>
-      </div>
-      <div class="callout"><strong>Write your plan</strong><p>Use the <a href="operator-worksheet.md">operator worksheet</a> to assign owners, evidence, recovery objectives, and open compatibility checks.</p></div>
-    </section>
-
-    <section class="section" id="gcp" data-title="Platform example">
-      <div class="section-heading">
-        <div><span class="kicker">09 · Optional example</span><h2>One possible platform: GCP</h2></div>
-        <p>This is a mapping exercise, not a prescribed architecture. Verify CARE storage and Celery broker compatibility before choosing managed replacements.</p>
-      </div>
-      <figure class="diagram-frame gcp-diagram">
-        <img src="gcp-managed-architecture.svg" alt="Managed-services CARE architecture on GCP with GKE workloads, Cloud SQL, Cloud Storage and Memorystore">
-        <figcaption><span>Managed-services GCP target</span><a href="gcp-managed-architecture.svg" target="_blank" rel="noopener noreferrer">Open full size ↗</a></figcaption>
-      </figure>
-      <p><a href="local-to-gcp.md">See the local-to-GCP capability mapping ↗</a></p>
-      <div class="request-path">
-        <span>Users</span><i>→</i><span>Cloud DNS</span><i>→</i><span>HTTPS LB</span><i>→</i><span>GKE Gateway</span><i>→</i><span>CARE Services</span><i>→</i><span>Pods</span>
-      </div>
-      <div class="callout"><strong>Operator question</strong><p>Who owns routing, each CARE workload, data and file recovery, broker health, monitoring, and the next release on your chosen platform?</p></div>
-    </section>
-
-    <section class="section closing" id="ready" data-title="Readiness">
-      <div class="section-heading">
-        <div><span class="kicker">10 · Readiness gate</span><h2>Evidence before confidence</h2></div>
-        <p>A healthy lab proves the learning flow. A real instance requires separate security, restore, rollback, and ownership evidence.</p>
-      </div>
-      <div class="gate-grid">
-        <article><span>01</span><strong>Traffic</strong><p>DNS, TLS, routes and backend health</p></article>
-        <article><span>02</span><strong>Workloads</strong><p>Resources, probes, replicas and disruption policy</p></article>
-        <article><span>03</span><strong>State</strong><p>Backups, PITR, lifecycle and tested restore</p></article>
-        <article><span>04</span><strong>Access</strong><p>Workload Identity, IAM and secret rotation</p></article>
-        <article><span>05</span><strong>Delivery</strong><p>Approved image digests and rollback target</p></article>
-        <article><span>06</span><strong>Operations</strong><p>Logs, metrics, alerts, runbooks and owners</p></article>
-      </div>
-      <div class="final-card">
-        <div><span class="eyebrow">Workshop complete</span><h3>Could you keep your instance running?</h3><p>Hand over the verification record, hosting choices, named operators, and unanswered recovery questions.</p></div>
-        <div class="final-actions"><a class="button button-primary button-large" href="operator-worksheet.md">Open operator worksheet</a><a class="text-link" href="readiness-checklist.md">Real-deployment gate ↗</a></div>
-      </div>
-    </section>
-  </main>
-
-  <button class="present-exit" id="exit-presentation" type="button">Exit presentation</button>
-  <button class="present-nav previous" id="previous-section" type="button" aria-label="Previous section">←</button>
-  <button class="present-nav next" id="next-section" type="button" aria-label="Next section">→</button>
-  <div class="toast" id="toast" role="status" aria-live="polite">Copied</div>
-  <script src="assets/app.js"></script>
+</div>
+<script>
+  const s=[...document.querySelectorAll('.slide')];let i=0;
+  s.forEach((el,n)=>{if(!el.classList.contains('cover')){const f=document.createElement('div');f.className='foot';f.innerHTML='<span>CARE HMIS · Infrastructure</span><span>'+(n+1)+' / '+s.length+'</span>';el.appendChild(f);}});
+  function fit(){const k=Math.min(innerWidth/1600,innerHeight/900);s.forEach(e=>e.style.transform='scale('+k+')');}
+  function show(n){i=Math.max(0,Math.min(s.length-1,n));s.forEach((e,j)=>e.classList.toggle('active',j===i));location.hash=i+1;}
+  addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key))show(i+1);if(['ArrowLeft','PageUp'].includes(e.key))show(i-1);});
+  addEventListener('click',e=>{if(e.target.closest('a'))return;show(i+(e.clientX>innerWidth/2?1:-1));});
+  addEventListener('resize',fit);fit();show((parseInt(location.hash.slice(1))||1)-1);
+</script>
 </body>
 </html>
