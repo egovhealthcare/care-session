@@ -1,0 +1,72 @@
+name: Validate Config
+
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+
+jobs:
+  validate:
+    name: Validate Config Files
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Validate JSON syntax
+        run: |
+          errors=0
+          for f in env/*/deploy_config.json env/*/build/*/build_config.json; do
+            if ! jq empty "$f" 2>/dev/null; then
+              echo "::error file=$f::Invalid JSON"
+              errors=$((errors + 1))
+            fi
+          done
+          exit $errors
+
+      - name: Check required deploy config fields
+        run: |
+          for f in env/*/deploy_config.json; do
+            env_name=$(basename "$(dirname "$f")")
+            for key in gcp_project_id workload_identity_provider service_account gcp_secret_name; do
+              val=$(jq -r ".$key" "$f")
+              if [[ -z "$val" ]]; then
+                echo "::warning file=$f::Empty field '$key' in $env_name — deploy will fail"
+              fi
+            done
+          done
+
+      - name: Validate build config fields
+        run: |
+          for f in env/*/build/*/build_config.json; do
+            for key in repo ref; do
+              val=$(jq -r ".$key" "$f")
+              if [[ -z "$val" ]]; then
+                echo "::error file=$f::Missing required field '$key'"
+                exit 1
+              fi
+            done
+          done
+
+      - name: Validate Python syntax
+        run: |
+          python3 -c "
+          import sys, ast, pathlib
+          errors = 0
+          for f in pathlib.Path('env').rglob('plug_config.py'):
+              try:
+                  ast.parse(f.read_text())
+              except SyntaxError as e:
+                  print(f'::error file={f}::{e}')
+                  errors += 1
+          sys.exit(errors)
+          "
+
+      - name: Check ADDITIONAL_PLUGS format
+        run: python3 tools/normalize_plugs.py --check
+
+      - name: Validate all env files are parseable
+        run: |
+          for f in env/*/build/*/*.env; do
+            python3 tools/normalize_plugs.py --emit "$f" >/dev/null
+          done

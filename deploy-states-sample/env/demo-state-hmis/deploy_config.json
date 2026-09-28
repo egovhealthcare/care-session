@@ -1,0 +1,16 @@
+{
+  "gcp_project_id": "care-hmis-demo-state",
+  "gcp_secret_name": "tofu-tfvars-demo-state-hmis",
+  "workload_identity_provider": "projects/000000000000/locations/global/workloadIdentityPools/github-actions/providers/github",
+  "service_account": "gh-deployer@care-hmis-demo-state.iam.gserviceaccount.com",
+  "image_registry": "asia-south1-docker.pkg.dev",
+  "ar_repo": "demo-state-hmis",
+  "iac_repo": "10bedicu/iac_tofu_template",
+  "iac_branch": "main",
+  "tofu": {
+    "TF_VAR_project_id": "care-hmis-demo-state",
+    "TF_VAR_region": "asia-south1",
+    "TF_VAR_env_name": "production",
+    "BACKEND_BUCKET": "iac-tofu-demo-state-hmis"
+  }
+}

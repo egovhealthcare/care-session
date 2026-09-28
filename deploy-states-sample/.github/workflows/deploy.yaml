@@ -1,0 +1,423 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy"
+        required: true
+        type: choice
+        options:
+          - production
+          - demo-state-hmis
+          - staging
+      care_tag:
+        description: "Backend (care) image tag (leave empty to skip)"
+        required: false
+        type: string
+      care_fe_tag:
+        description: "Frontend (care_fe) image tag (leave empty to skip)"
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      environment:
+        description: "Environment to deploy"
+        required: true
+        type: string
+      care_tag:
+        description: "Backend (care) image tag (leave empty to skip)"
+        required: false
+        type: string
+      care_fe_tag:
+        description: "Frontend (care_fe) image tag (leave empty to skip)"
+        required: false
+        type: string
+
+concurrency:
+  group: deploy-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 1. Resolve "all" → list of environment names
+  # ---------------------------------------------------------------------------
+  resolve-envs:
+    name: Resolve Environments
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      envs: ${{ steps.resolve.outputs.envs }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Resolve environment list
+        id: resolve
+        env:
+          INPUT_ENV: ${{ inputs.environment }}
+        run: |
+          if [[ "$INPUT_ENV" == "production" ]]; then
+            envs=$(for f in env/*/deploy_config.json; do
+              jq -e '.tofu.TF_VAR_env_name == "production"' "$f" > /dev/null 2>&1 && basename "$(dirname "$f")"
+            done | jq -Rsc 'split("\n") | map(select(. != ""))')
+          else
+            envs=$(jq -nc --arg e "$INPUT_ENV" '[$e]')
+          fi
+          echo "envs=$envs" >> "$GITHUB_OUTPUT"
+
+  # ---------------------------------------------------------------------------
+  # 2. Verify image tags exist in GHCR before proceeding
+  # ---------------------------------------------------------------------------
+  verify-images:
+    name: "Verify Images: ${{ matrix.env }}"
+    if: github.event_name == 'workflow_dispatch'
+    needs: resolve-envs
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      fail-fast: true
+      matrix:
+        env: ${{ fromJson(needs.resolve-envs.outputs.envs) }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Set up GCP
+        id: gcp
+        uses: ./.github/actions/gcp-auth
+        with:
+          environment: ${{ matrix.env }}
+
+      - name: Verify images exist
+        env:
+          CARE_TAG: ${{ inputs.care_tag }}
+          CARE_FE_TAG: ${{ inputs.care_fe_tag }}
+          REGISTRY: ${{ steps.gcp.outputs.registry }}
+          PROJECT: ${{ steps.gcp.outputs.project }}
+          ENVIRONMENT: ${{ matrix.env }}
+        run: |
+          AR_REPO=$(jq -r .ar_repo "env/${ENVIRONMENT}/deploy_config.json")
+          failed=0
+
+          if [[ -n "$CARE_TAG" ]]; then
+            image="${REGISTRY}/${PROJECT}/${AR_REPO}/care:${CARE_TAG}"
+            if docker manifest inspect "$image" > /dev/null 2>&1; then
+              echo "✅ care: ${image}"
+            else
+              echo "::error::Image not found: ${image}. Was the build successful?"
+              failed=1
+            fi
+          fi
+
+          if [[ -n "$CARE_FE_TAG" ]]; then
+            image="${REGISTRY}/${PROJECT}/${AR_REPO}/care_fe:${CARE_FE_TAG}"
+            if docker manifest inspect "$image" > /dev/null 2>&1; then
+              echo "✅ care_fe: ${image}"
+            else
+              echo "::error::Image not found: ${image}. Was the build successful?"
+              failed=1
+            fi
+          fi
+
+          if [[ -z "$CARE_TAG" && -z "$CARE_FE_TAG" ]]; then
+            echo "ℹ️ No image tags provided — secret update will be skipped; tofu plan/apply will still run (use this to roll out tfvars/env/secret changes)."
+          fi
+
+          exit $failed
+
+  # ---------------------------------------------------------------------------
+  # 3. Update GCP Secret Manager with new image tags
+  # ---------------------------------------------------------------------------
+  update-secret:
+    name: "Update Secret: ${{ matrix.env }}"
+    needs: [resolve-envs, verify-images]
+    # Skip when no image tags given — lets tfvars/env-only changes go straight to deploy.
+    if: always() && !failure() && !cancelled() && (inputs.care_tag != '' || inputs.care_fe_tag != '')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        env: ${{ fromJson(needs.resolve-envs.outputs.envs) }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Set up GCP
+        id: gcp
+        uses: ./.github/actions/gcp-auth
+        with:
+          environment: ${{ matrix.env }}
+
+      - name: Update image tags in Secret Manager
+        env:
+          PROJECT: ${{ steps.gcp.outputs.project }}
+          SECRET: ${{ steps.gcp.outputs.secret }}
+          REGISTRY: ${{ steps.gcp.outputs.registry }}
+          ENV: ${{ matrix.env }}
+          CARE_TAG: ${{ inputs.care_tag }}
+          CARE_FE_TAG: ${{ inputs.care_fe_tag }}
+        run: |
+          AR_REPO=$(jq -r .ar_repo "env/${ENV}/deploy_config.json")
+          FILE=/tmp/config.tfvars
+          gcloud secrets versions access latest \
+            --secret="$SECRET" --project="$PROJECT" > "$FILE"
+
+          # Rewrite repository/tag inside a specific HCL block.
+          #
+          # The sed range is anchored to the real block opener
+          #   ^<indent>NAME = {
+          # and closer
+          #   ^<indent>}
+          # so unrelated mentions of the block name elsewhere in the file
+          # (e.g. comments above helm_config) cannot open the range.
+          # Inside the range, lines starting with `#` are skipped, so
+          # commented-out blocks are also safe.
+          update_block() {
+            local name="$1" repo="$2" tag="$3"
+            sed -i -E "/^[[:space:]]*${name}[[:space:]]*=[[:space:]]*\{/,/^[[:space:]]*\}/{
+              /^[[:space:]]*#/b
+              s|repository = \"[^\"]*\"|repository = \"${repo}\"|
+              s|tag *= *\"[^\"]*\"|tag        = \"${tag}\"|
+            }" "$FILE"
+          }
+
+          # Sanity-check that <name> block ends up pointing at .../<suffix>.
+          assert_block_image() {
+            local name="$1" suffix="$2"
+            if ! awk "/^[[:space:]]*${name}[[:space:]]*=[[:space:]]*\\{/,/^[[:space:]]*\\}/" "$FILE" \
+                 | grep -q "/${suffix}\""; then
+              echo "::error::${name} block does not reference .../${suffix} after update"
+              exit 1
+            fi
+          }
+
+          if [[ -n "$CARE_TAG" ]]; then
+            REPO="${REGISTRY}/${PROJECT}/${AR_REPO}/care"
+            echo "Updating backend → ${REPO}:${CARE_TAG}"
+            update_block care_backend "$REPO" "$CARE_TAG"
+            assert_block_image care_backend care
+          fi
+
+          if [[ -n "$CARE_FE_TAG" ]]; then
+            REPO="${REGISTRY}/${PROJECT}/${AR_REPO}/care_fe"
+            echo "Updating frontend → ${REPO}:${CARE_FE_TAG}"
+            update_block care_frontend "$REPO" "$CARE_FE_TAG"
+            assert_block_image care_frontend care_fe
+          fi
+
+          gcloud secrets versions add "$SECRET" \
+            --data-file="$FILE" --project="$PROJECT"
+
+          echo "✅ Secret '$SECRET' updated"
+
+      - name: Summary
+        if: always()
+        env:
+          ENV: ${{ matrix.env }}
+          CARE_TAG: ${{ inputs.care_tag }}
+          CARE_FE_TAG: ${{ inputs.care_fe_tag }}
+        run: |
+          echo "### Secret Update — \`${ENV}\`" >> $GITHUB_STEP_SUMMARY
+          echo "| Component | Tag |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|-----|" >> $GITHUB_STEP_SUMMARY
+          [[ -n "$CARE_TAG" ]] && echo "| Backend | \`${CARE_TAG}\` |" >> $GITHUB_STEP_SUMMARY || true
+          [[ -n "$CARE_FE_TAG" ]] && echo "| Frontend | \`${CARE_FE_TAG}\` |" >> $GITHUB_STEP_SUMMARY || true
+          echo "Status: ${{ job.status == 'success' && '✅ Updated' || '❌ Failed' }}" >> $GITHUB_STEP_SUMMARY
+
+  # ---------------------------------------------------------------------------
+  # 4. OpenTofu plan → approve → apply (single job per environment)
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: "Deploy: ${{ matrix.env }}"
+    needs: [resolve-envs, update-secret]
+    # Run even when update-secret was skipped (no image tags provided).
+    if: always() && !failure() && !cancelled()
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    permissions:
+      contents: read
+      id-token: write
+      issues: write
+    strategy:
+      fail-fast: false
+      matrix:
+        env: ${{ fromJson(needs.resolve-envs.outputs.envs) }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Set up GCP + IaC
+        uses: ./.github/actions/gcp-auth
+        with:
+          environment: ${{ matrix.env }}
+          setup-iac: "true"
+
+      - name: Init & Plan
+        working-directory: iac/deploy
+        env:
+          NO_COLOR: "1"
+          TF_IN_AUTOMATION: "true"
+          TF_CLI_ARGS: "-no-color"
+          TF_CLI_ARGS_plan: "-input=false -out=tfplan"
+        run: |
+          make init
+          make plan 2>&1 | tee /tmp/plan-output.txt
+
+      - name: Plan Summary
+        if: always()
+        env:
+          ENV_NAME: ${{ matrix.env }}
+        run: |
+          if [[ ! -s /tmp/plan-output.txt ]]; then
+            echo "Plan did not produce output (init or plan failed)." > /tmp/plan-output.txt
+          fi
+
+          echo "### Tofu Plan — \`${ENV_NAME}\`" >> $GITHUB_STEP_SUMMARY
+          echo '<details><summary>Plan output</summary>' >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/plan-output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo '</details>' >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload plan output
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: tofu-plan-${{ matrix.env }}
+          path: /tmp/plan-output.txt
+          retention-days: 7
+
+      # --- Approve ---
+      - name: Request approval via issue
+        id: approval
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ENV: ${{ matrix.env }}
+          CARE_TAG: ${{ inputs.care_tag }}
+          CARE_FE_TAG: ${{ inputs.care_fe_tag }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          ASSIGNEE: ${{ github.actor }}
+          APPROVERS: your-github-handle
+          APPROVAL_TIMEOUT_MINUTES: "45"
+        run: |
+          # Ensure label exists
+          gh label create deploy-approval \
+            --description "Automated deploy approval request" \
+            --color "FBCA04" \
+            --repo "$GITHUB_REPOSITORY" 2>/dev/null || true
+
+          # Build plan summary for the issue body
+          export change_line=$(grep -E "^(Plan:|No changes\.)" /tmp/plan-output.txt || echo "Plan output unavailable")
+          export plan_text=$(head -c 60000 /tmp/plan-output.txt)
+          export CARE_TAG_DISPLAY="${CARE_TAG:-skipped}"
+          export CARE_FE_TAG_DISPLAY="${CARE_FE_TAG:-skipped}"
+
+          body=$(cat <<'EOF'
+          Deployment to **${ENV}** is pending approval.
+
+          | Component | Tag |
+          |-----------|-----|
+          | Backend | `${CARE_TAG_DISPLAY}` |
+          | Frontend | `${CARE_FE_TAG_DISPLAY}` |
+
+          **[View workflow run](${RUN_URL})**
+
+          ---
+
+          ### Tofu Plan
+
+          **${ENV}**: ${change_line}
+
+          <details><summary>Full plan output</summary>
+
+          ```
+          ${plan_text}
+          ```
+          </details>
+
+          ---
+
+          Review the plan output above, then comment **`approved`** to proceed or **`denied`** to cancel.
+          EOF
+          )
+
+          # Only expand known variables (protects plan output from $ corruption)
+          body=$(envsubst '$ENV $CARE_TAG_DISPLAY $CARE_FE_TAG_DISPLAY $RUN_URL $change_line $plan_text' <<< "$body")
+
+          issue_url=$(gh issue create \
+            --title "Deploy approval for ${ENV}" \
+            --body "$body" \
+            --label "deploy-approval" \
+            --assignee "$ASSIGNEE" \
+            --repo "$GITHUB_REPOSITORY")
+
+          issue_number=$(basename "$issue_url")
+          echo "issue_number=$issue_number" >> "$GITHUB_OUTPUT"
+          echo "Created approval issue #${issue_number}: ${issue_url}"
+
+          # Poll for approval comment from an authorized approver
+          echo "Waiting for approval (timeout: ${APPROVAL_TIMEOUT_MINUTES}m)..."
+          deadline=$(( $(date +%s) + APPROVAL_TIMEOUT_MINUTES * 60 ))
+
+          while [[ $(date +%s) -lt $deadline ]]; do
+            sleep 15
+
+            response=$(gh api "repos/${GITHUB_REPOSITORY}/issues/${issue_number}/comments" \
+              --jq '.[] | select(.user.login as $u | env.APPROVERS | split(",") | index($u)) | .body' \
+              2>/dev/null || echo "")
+
+            if echo "$response" | grep -qi "^approved$"; then
+              echo "✅ Approved!"
+              gh issue close "$issue_number" --repo "$GITHUB_REPOSITORY" \
+                --comment "✅ Approved — proceeding with deployment."
+              exit 0
+            fi
+
+            if echo "$response" | grep -qi "^denied$"; then
+              echo "❌ Denied"
+              gh issue close "$issue_number" --repo "$GITHUB_REPOSITORY" \
+                --comment "❌ Denied — deployment cancelled."
+              exit 1
+            fi
+          done
+
+          # Timed out without approval
+          echo "⏰ Approval timed out after ${APPROVAL_TIMEOUT_MINUTES} minutes"
+          gh issue close "$issue_number" --repo "$GITHUB_REPOSITORY" \
+            --comment "⏰ Timed out — no approval received within ${APPROVAL_TIMEOUT_MINUTES} minutes."
+          exit 1
+
+      # --- Apply the saved plan  ---
+      - name: Apply
+        working-directory: iac/deploy
+        env:
+          TF_IN_AUTOMATION: "true"
+        run: tofu apply tfplan
+
+      - name: Close issue on failure
+        if: failure() && steps.approval.outputs.issue_number
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ steps.approval.outputs.issue_number }}
+        run: |
+          gh issue close "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY" \
+            --comment "❌ Deployment failed — see [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})." 2>/dev/null || true
+
+      - name: Summary
+        if: always()
+        env:
+          ENV: ${{ matrix.env }}
+          CARE_TAG: ${{ inputs.care_tag }}
+          CARE_FE_TAG: ${{ inputs.care_fe_tag }}
+        run: |
+          status="${{ job.status == 'success' && '✅ Deployed' || '❌ Failed' }}"
+          echo "### Deploy — \`${ENV}\`" >> $GITHUB_STEP_SUMMARY
+          echo "| Component | Tag | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          [[ -n "$CARE_TAG" ]] && echo "| Backend | \`${CARE_TAG}\` | ${status} |" >> $GITHUB_STEP_SUMMARY || true
+          [[ -n "$CARE_FE_TAG" ]] && echo "| Frontend | \`${CARE_FE_TAG}\` | ${status} |" >> $GITHUB_STEP_SUMMARY || true

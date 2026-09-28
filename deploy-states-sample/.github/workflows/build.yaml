@@ -1,0 +1,192 @@
+name: Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to build"
+        required: true
+        type: choice
+        options:
+          - production
+          - demo-state-hmis
+          - staging
+      component:
+        description: "Component to build"
+        required: true
+        type: choice
+        options:
+          - all
+          - care
+          - care_fe
+      deploy:
+        description: "Deploy after build?"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 1. Build matrix from config files
+  # ---------------------------------------------------------------------------
+  prepare:
+    name: Prepare Build Matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      matrix: ${{ steps.matrix.outputs.result }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Generate matrix
+        id: matrix
+        env:
+          INPUT_ENV: ${{ inputs.environment }}
+          INPUT_COMP: ${{ inputs.component }}
+        run: |
+          if [[ "$INPUT_ENV" == "production" ]]; then
+            envs=$(for f in env/*/deploy_config.json; do
+              jq -e '.tofu.TF_VAR_env_name == "production"' "$f" > /dev/null 2>&1 && basename "$(dirname "$f")"
+            done | tr '\n' ' ')
+          else
+            envs="$INPUT_ENV"
+          fi
+
+          if [[ "$INPUT_COMP" == "all" ]]; then
+            components="care care_fe"
+          else
+            components="$INPUT_COMP"
+          fi
+
+          matrix="[]"
+          for env_name in $envs; do
+            deploy_config="env/${env_name}/deploy_config.json"
+            ar_repo=$(jq -r .ar_repo "$deploy_config")
+            for comp in $components; do
+              config="env/${env_name}/build/${comp}/build_config.json"
+              matrix=$(jq -c \
+                --arg e "$env_name" --arg c "$comp" \
+                --arg repo "$(jq -r .repo "$config")" \
+                --arg ref  "$(jq -r .ref  "$config")" \
+                --arg ar_repo "$ar_repo" \
+                '. + [{environment: $e, component: $c, repo: $repo, ref: $ref, ar_repo: $ar_repo}]' \
+                <<< "$matrix")
+            done
+          done
+
+          echo "result={\"include\":$matrix}" >> "$GITHUB_OUTPUT"
+
+  # ---------------------------------------------------------------------------
+  # 2. Build Docker images
+  # ---------------------------------------------------------------------------
+  build:
+    name: "Build ${{ matrix.component }} (${{ matrix.environment }})"
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
+    steps:
+      - name: Checkout deploy-states
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Set up GCP
+        id: gcp
+        uses: ./.github/actions/gcp-auth
+        with:
+          environment: ${{ matrix.environment }}
+
+      - name: Checkout source
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          repository: ${{ matrix.repo }}
+          ref: ${{ matrix.ref }}
+          path: source
+
+      - name: Inject build config
+        env:
+          COMPONENT: ${{ matrix.component }}
+          ENVIRONMENT: ${{ matrix.environment }}
+        run: |
+          case "$COMPONENT" in
+            care_fe) cp "env/${ENVIRONMENT}/build/care_fe/care_fe.env" source/.env.local ;;
+          esac
+
+      - name: Resolve Dockerfile
+        id: dockerfile
+        env:
+          COMPONENT: ${{ matrix.component }}
+        run: |
+          case "$COMPONENT" in
+            care) echo "path=source/docker/prod.Dockerfile" ;;
+            *)    echo "path=source/Dockerfile" ;;
+          esac >> "$GITHUB_OUTPUT"
+
+      - name: Build & push
+        env:
+          IMAGE_BASE: "${{ steps.gcp.outputs.registry }}/${{ steps.gcp.outputs.project }}/${{ matrix.ar_repo }}/${{ matrix.component }}"
+          DOCKERFILE: ${{ steps.dockerfile.outputs.path }}
+          COMPONENT: ${{ matrix.component }}
+          ENVIRONMENT: ${{ matrix.environment }}
+        run: |
+          docker buildx create --use --name care-builder --driver docker-container
+
+          # Read build args from env file
+          build_args=()
+          env_file="env/${ENVIRONMENT}/build/${COMPONENT}/${COMPONENT}.env"
+          if [[ -f "$env_file" ]]; then
+            emitted=$(python3 tools/normalize_plugs.py --emit "$env_file")
+            while IFS= read -r line || [[ -n "$line" ]]; do
+              [[ -z "$line" ]] && continue
+              build_args+=(--build-arg "$line")
+            done <<< "$emitted"
+          fi
+
+          docker buildx build \
+            --push \
+            --no-cache \
+            --file "$DOCKERFILE" \
+            --tag "${IMAGE_BASE}:latest-${{ github.run_number }}" \
+            --tag "${IMAGE_BASE}:latest" \
+            "${build_args[@]}" \
+            --label "org.opencontainers.image.revision=${{ github.run_number }}" \
+            --label "org.opencontainers.image.created=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            source
+
+      - name: Summary
+        if: always()
+        env:
+          COMPONENT: ${{ matrix.component }}
+          ENVIRONMENT: ${{ matrix.environment }}
+          REPO: ${{ matrix.repo }}
+          REF: ${{ matrix.ref }}
+          IMAGE_BASE: "${{ steps.gcp.outputs.registry }}/${{ steps.gcp.outputs.project }}/${{ matrix.ar_repo }}/${{ matrix.component }}"
+        run: |
+          echo "### Build — \`${COMPONENT}\` (\`${ENVIRONMENT}\`)" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Source | \`${REPO}@${REF}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Image | \`${IMAGE_BASE}:latest-${{ github.run_number }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | ${{ job.status == 'success' && '✅ Built' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+
+  # ---------------------------------------------------------------------------
+  # 3. Trigger deploy (single-environment only)
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: Deploy
+    if: inputs.deploy && inputs.environment != 'production'
+    needs: build
+    permissions:
+      contents: read
+      id-token: write
+      issues: write
+    uses: ./.github/workflows/deploy.yaml
+    with:
+      environment: ${{ inputs.environment }}
+      care_tag: ${{ (inputs.component == 'all' || inputs.component == 'care') && format('latest-{0}', github.run_number) || '' }}
+      care_fe_tag: ${{ (inputs.component == 'all' || inputs.component == 'care_fe') && format('latest-{0}', github.run_number) || '' }}
+    secrets: inherit

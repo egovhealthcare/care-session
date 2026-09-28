@@ -1,0 +1,145 @@
+name: "GCP Auth & Config"
+description: >
+  Load environment config, authenticate to GCP via Workload Identity Federation,
+  and optionally set up IaC tools. Only first-party GitHub actions (actions/checkout,
+  actions/upload-artifact) are used in the calling workflows — all other functionality
+  (GCP auth, SSH, OpenTofu) is handled inline via bash, curl, and gcloud.
+
+inputs:
+  environment:
+    description: "Environment name (subdirectory under env/)"
+    required: true
+  setup-iac:
+    description: "Clone IaC repo and install OpenTofu"
+    required: false
+    default: "false"
+
+outputs:
+  project:
+    description: "GCP project ID"
+    value: ${{ steps.cfg.outputs.project }}
+  secret:
+    description: "GCP secret name"
+    value: ${{ steps.cfg.outputs.secret }}
+  registry:
+    description: "Image registry"
+    value: ${{ steps.cfg.outputs.registry }}
+
+runs:
+  using: composite
+  steps:
+    # ------------------------------------------------------------------
+    # 1. Read deploy_config.json → step outputs + tofu env vars
+    # ------------------------------------------------------------------
+    - name: Load deploy config
+      id: cfg
+      shell: bash
+      env:
+        ENV_NAME: ${{ inputs.environment }}
+      run: |
+        config="env/${ENV_NAME}/deploy_config.json"
+        echo "wif=$(jq -r '.workload_identity_provider' "$config")"       >> "$GITHUB_OUTPUT"
+        echo "sa=$(jq -r '.service_account' "$config")"                   >> "$GITHUB_OUTPUT"
+        echo "project=$(jq -r '.gcp_project_id' "$config")"               >> "$GITHUB_OUTPUT"
+        echo "secret=$(jq -r '.gcp_secret_name' "$config")"               >> "$GITHUB_OUTPUT"
+        echo "registry=$(jq -r '.image_registry' "$config")"              >> "$GITHUB_OUTPUT"
+        echo "iac_branch=$(jq -r '.iac_branch // "main"' "$config")"      >> "$GITHUB_OUTPUT"
+        echo "iac_repo=$(jq -r '.iac_repo // "10bedicu/iac_tofu_template"' "$config")" >> "$GITHUB_OUTPUT"
+
+        # Inject tofu variables (TF_VAR_*, BACKEND_BUCKET, etc.) into env
+        if jq -e '.tofu' "$config" > /dev/null 2>&1; then
+          jq -r '.tofu | to_entries[] | "\(.key)=\(.value)"' "$config" >> "$GITHUB_ENV"
+        fi
+
+    # ------------------------------------------------------------------
+    # 2. Authenticate to GCP using Workload Identity Federation (OIDC)
+    #    Replaces: google-github-actions/auth + google-github-actions/setup-gcloud
+    #    Requires: permissions: id-token: write
+    # ------------------------------------------------------------------
+    - name: Authenticate to GCP
+      shell: bash
+      env:
+        WIF_PROVIDER: ${{ steps.cfg.outputs.wif }}
+        SA_EMAIL: ${{ steps.cfg.outputs.sa }}
+        PROJECT_ID: ${{ steps.cfg.outputs.project }}
+      run: |
+        # Verify OIDC endpoint is available
+        if [[ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" || -z "${ACTIONS_ID_TOKEN_REQUEST_TOKEN:-}" ]]; then
+          echo "::error::OIDC token endpoint not available. Ensure 'permissions: id-token: write' is set on the job."
+          exit 1
+        fi
+
+        AUDIENCE="//iam.googleapis.com/${WIF_PROVIDER}"
+        CRED_FILE="/tmp/gcp_wif_credentials.json"
+
+        # Build a credential config that tells the Google SDK how to fetch
+        # fresh OIDC tokens from GitHub's endpoint and exchange them via STS.
+        jq -n \
+          --arg audience          "$AUDIENCE" \
+          --arg token_url         "https://sts.googleapis.com/v1/token" \
+          --arg cred_url          "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${AUDIENCE}" \
+          --arg auth_header       "bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+          --arg impersonation_url "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${SA_EMAIL}:generateAccessToken" \
+          '{
+            type: "external_account",
+            audience: $audience,
+            subject_token_type: "urn:ietf:params:oauth:token-type:jwt",
+            token_url: $token_url,
+            credential_source: {
+              url: $cred_url,
+              headers: { Authorization: $auth_header },
+              format: { type: "json", subject_token_field_name: "value" }
+            },
+            service_account_impersonation_url: $impersonation_url
+          }' > "$CRED_FILE"
+
+        echo "GOOGLE_APPLICATION_CREDENTIALS=${CRED_FILE}" >> "$GITHUB_ENV"
+
+        # Activate credentials for gcloud CLI (pre-installed on runners)
+        gcloud auth login --cred-file="$CRED_FILE" --quiet
+        gcloud config set project "$PROJECT_ID" 2>/dev/null || true
+
+        echo "✅ Authenticated to GCP project '$PROJECT_ID'"
+
+    # ------------------------------------------------------------------
+    # 3. Configure Docker for GCP Artifact Registry
+    # ------------------------------------------------------------------
+    - name: Configure Docker for Artifact Registry
+      shell: bash
+      env:
+        REGISTRY: ${{ steps.cfg.outputs.registry }}
+      run: |
+        gcloud auth configure-docker "$REGISTRY" --quiet
+        echo "✅ Docker configured for '$REGISTRY'"
+
+    # ------------------------------------------------------------------
+    # 4. (Optional) Clone IaC repo + install OpenTofu
+    # ------------------------------------------------------------------
+    - name: Clone IaC repo and install OpenTofu
+      if: inputs.setup-iac == 'true'
+      shell: bash
+      env:
+        IAC_REPO: ${{ steps.cfg.outputs.iac_repo }}
+        IAC_BRANCH: ${{ steps.cfg.outputs.iac_branch }}
+        TOFU_VERSION: "1.11.6"
+      run: |
+        # --- Clone IaC repo (public, HTTPS) ---
+        git clone --depth=1 --branch="$IAC_BRANCH" \
+          "https://github.com/${IAC_REPO}.git" iac
+
+        # --- Install OpenTofu ---
+        TOFU_ZIP="tofu_${TOFU_VERSION}_linux_amd64.zip"
+        TOFU_URL="https://github.com/opentofu/opentofu/releases/download/v${TOFU_VERSION}"
+        curl -fsSL "${TOFU_URL}/${TOFU_ZIP}"             -o "/tmp/${TOFU_ZIP}"
+        curl -fsSL "${TOFU_URL}/tofu_${TOFU_VERSION}_SHA256SUMS" -o /tmp/tofu_checksums
+
+        # Verify integrity (sha256sum --check needs the file in cwd with the exact name from the checksums file)
+        cd /tmp && grep "$TOFU_ZIP" tofu_checksums | sha256sum --check --strict
+
+        # Install to user-local bin (no sudo needed)
+        mkdir -p "$HOME/.local/bin"
+        unzip -o "/tmp/${TOFU_ZIP}" tofu -d "$HOME/.local/bin/"
+        chmod +x "$HOME/.local/bin/tofu"
+        echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+        export PATH="$HOME/.local/bin:$PATH"
+        tofu --version
