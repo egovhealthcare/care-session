@@ -197,17 +197,9 @@
 <section class="slide">
   <div class="kicker">Costing estimations</div>
   <h1>Monthly cost of one gcp_template instance</h1>
-  <table>
-    <tr><th>Line item</th><th>Typical config</th><th>Est. USD / month</th></tr>
-    <tr><td>GKE nodes</td><td>3–5 × e2-standard-2 (asia-south1)</td><td>~$175 – $295</td></tr>
-    <tr><td>Cloud SQL primary</td><td>db-custom-2-3840, zonal, SSD</td><td>~$95</td></tr>
-    <tr><td>Cloud SQL read replica</td><td>db-custom-1-3840</td><td>~$60</td></tr>
-    <tr><td>Metabase metadata DB</td><td>db-f1-micro</td><td>~$10</td></tr>
-    <tr><td>Load balancer, NAT, static IP</td><td>Regional external ALB + Cloud NAT</td><td>~$50 – $70</td></tr>
-    <tr><td>Storage, logs, backups, egress</td><td>Depends on usage</td><td>~$20 – $60</td></tr>
-    <tr><td><b>Total per instance</b></td><td><b>Staging ≈ low end · large ≈ high end</b></td><td><b>~$400 – $600</b></td></tr>
-  </table>
-  <p class="src">Estimate from Google list prices × the resources actually provisioned (slide 8). Not a billing export — confirm with the GCP pricing calculator / billing reports for your project. GKE zonal cluster fee is covered by the per-billing-account free tier.</p>
+  <table class="compact"><tr><th>Item</th><th>Small (TeleICU staging)</th><th>State production</th><th>Small / month</th><th>Production / month</th></tr><tr><td>Kubernetes nodes</td><td>1 node · 2 vCPU / 8 GB</td><td>3–5 nodes</td><td>~$65</td><td>~$175 – $295</td></tr><tr><td>Database</td><td>2 vCPU / 3.75 GB, no replica</td><td>2 vCPU / 3.75 GB</td><td>~$95</td><td>~$95</td></tr><tr><td>Database read replica</td><td>—</td><td>1 vCPU / 3.75 GB</td><td>—</td><td>~$60</td></tr><tr><td>Metabase settings DB</td><td>Smallest tier</td><td>Smallest tier</td><td>~$10</td><td>~$10</td></tr><tr><td>Load balancer, NAT, IPs</td><td>Same setup</td><td>Same setup</td><td>~$50</td><td>~$50 – $70</td></tr><tr><td>Storage, logs, backups, traffic</td><td>Low use</td><td>Depends on use</td><td>~$10</td><td>~$20 – $60</td></tr><tr><td><b>Total</b></td><td></td><td></td><td><b>~$230</b></td><td><b>~$400 – $600</b></td></tr></table>
+  <div class="note" style="margin-top:16px"><b>Starting smaller:</b> one node, no read replica (point Metabase at a read-only DB user instead), or skip Metabase entirely. Grow nodes and database only when usage shows it.</div>
+  <p class="src">Estimate from Google list prices (asia-south1) × provisioned resources. Not a billing export.</p>
 </section>
 
 <!-- 13 -->
