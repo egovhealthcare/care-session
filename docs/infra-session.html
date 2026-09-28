@@ -77,7 +77,7 @@
   <div class="kicker">Infra requirements · Tech stack</div>
   <h1>How the pieces talk to each other</h1>
   <div class="diagram"><img src="tech-stack-runtime-diagram-v5.svg" alt="CARE runtime diagram"></div>
-  <p class="src">Browser loads the React bundle from Nginx, then calls the Django API. API and workers share PostgreSQL, Redis and object storage. Beat is the single scheduler.</p>
+  <p class="src">Browser loads the React bundle from Nginx, then calls the Django API. For files, the API returns a pre-signed URL and the browser uploads/downloads directly to object storage — file bytes never pass through the backend. Celery workers read/write storage directly. Beat is the single scheduler.</p>
 </section>
 
 <!-- 3 -->
@@ -92,7 +92,7 @@
     <tr><td><b>Celery Beat</b></td><td>Same image, <code>/app/celery_beat.sh</code> — runs migrations + syncs, then Beat</td><td>Scheduler (1 replica)</td></tr>
     <tr><td><b>PostgreSQL</b></td><td>Cloud SQL <code>POSTGRES_17</code>, private IP, PITR, 7 backups</td><td>Primary data</td></tr>
     <tr><td><b>Redis</b></td><td><code>redis:8-alpine</code> in-cluster</td><td>Cache + Celery broker</td></tr>
-    <tr><td><b>Object storage</b></td><td>S3 API via boto3 → GCS in GCP, any S3-compatible store elsewhere</td><td>Files / uploads</td></tr>
+    <tr><td><b>Object storage</b></td><td>S3 API via boto3 → GCS in GCP, any S3-compatible store elsewhere. Backend only issues pre-signed PUT/GET URLs</td><td>Files: browser ↔ storage direct</td></tr>
   </table>
 </section>
 

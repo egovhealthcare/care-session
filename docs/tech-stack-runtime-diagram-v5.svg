@@ -22,7 +22,8 @@
     <line x1="190" y1="330" x2="300" y2="330" marker-end="url(#m)"/>                                   <!-- Users -> FE -->
     <line x1="520" y1="330" x2="620" y2="330" marker-end="url(#m)"/>                                   <!-- FE -> BE -->
     <line x1="860" y1="260" x2="1060" y2="260" marker-start="url(#m)" marker-end="url(#m)"/>           <!-- BE <-> PG -->
-    <line x1="860" y1="430" x2="1060" y2="430" marker-start="url(#m)" marker-end="url(#m)"/>           <!-- BE <-> Storage -->
+    <line x1="726" y1="515" x2="754" y2="515" stroke="#FFFFFF" stroke-width="14"/>
+    <polyline points="105,420 105,515 1060,515" stroke="#2A9D8F" stroke-width="3" marker-start="url(#m)" marker-end="url(#m)"/>           <!-- BE <-> Storage -->
     <line x1="740" y1="470" x2="740" y2="580" marker-start="url(#m)" marker-end="url(#m)"/>            <!-- BE <-> Redis -->
     <polyline points="470,850 680,850 680,730" marker-end="url(#m)"/>                                  <!-- Beat -> Redis -->
     <polyline points="800,730 800,850 960,850" marker-start="url(#m)" marker-end="url(#m)"/>           <!-- Redis <-> Worker -->
@@ -33,9 +34,10 @@
   <!-- ============ ARROW LABELS ============ -->
   <text x="245" y="316" text-anchor="middle" class="l">opens app</text>
   <text x="570" y="316" text-anchor="middle" class="l">API calls</text>
+  <text x="562" y="354" text-anchor="middle" class="l" style="font-size:14px">+ signed URL</text>
   <text x="960" y="246" text-anchor="middle" class="l">data read/write</text>
-  <text x="960" y="416" text-anchor="middle" class="l">file upload/download</text>
-  <text x="728" y="530" text-anchor="end" class="l">cache + enqueue</text>
+  <text x="728" y="562" text-anchor="end" class="l">cache + enqueue</text>
+  <text x="420" y="503" text-anchor="middle" class="l" style="fill:#1F6F6B">direct file upload / download (signed URL)</text>
   <text x="570" y="836" text-anchor="middle" class="l">scheduled tasks</text>
   <text x="880" y="836" text-anchor="middle" class="l">consume tasks</text>
   <text x="1134" y="670" class="l">files</text>
