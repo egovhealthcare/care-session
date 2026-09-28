@@ -12,6 +12,7 @@ This repository is a training environment for running CARE locally with Docker C
 - Never read, print, commit, or overwrite a user's existing `.env`.
 - Never run `docker compose down -v` unless the user explicitly requests deletion of local data.
 - Do not commit the cloned `care/` or `care_fe/` repositories.
+- Keep `deploy-states-sample/` synthetic: fake project IDs, domains, accounts and secrets only. Never copy real values from `auto-deploy-states` or any live environment.
 - Do not add a separate migration or init service. The current CARE `celery_beat.sh` performs migrations and synchronization before starting Beat.
 
 ## Required local layout
@@ -21,6 +22,8 @@ care-session/
 ├── compose.yaml
 ├── .env.example
 ├── frontend.env.production.local
+├── docs/                 # workshop docs + the Session 3 deck (GitHub Pages root)
+├── deploy-states-sample/ # synthetic copy of the auto-deploy-states layout and workflows
 ├── care/       # cloned from ohcnetwork/care develop
 └── care_fe/    # cloned from ohcnetwork/care_fe develop
 ```
@@ -168,3 +171,19 @@ When changing a component or startup dependency, update all of:
 - `docs/facilitator-guide.md`
 - `docs/readiness-checklist.md`
 - `docs/local-to-gcp.md` when the production mapping changes
+- `docs/index.html` (the deck) when setup commands, ports, services or fixture steps change — slide "Run CARE on your own machine" repeats them
+
+## Presentation
+
+The CARE Fundamentals Webinar Series · Session 3 deck is a single file, `docs/index.html`, published by GitHub Pages from `main` / `docs` at <https://jesbinjoseph.github.io/care-session/>. There is no build step and no Actions workflow: pushing to `main` deploys it. `#N` jumps to slide N.
+
+- `docs/infra-session.html` is a redirect for the old URL. Keep it.
+- Images it uses: `docs/tech-stack-runtime-diagram-v6.svg` (and `.png` export) and `docs/celery-worker-hpa-sample.png`. Remove old diagram versions instead of keeping drafts.
+- Style follows ohc.network: Bricolage Grotesque headings, Switzer body, forest green / lime palette. Reuse the existing CSS classes; do not add a second template.
+- Content rules:
+  - Only facts verified in `care`, `care_fe`, `gcp_template`, `deploy-states-sample`, or live read-only measurements.
+  - No state names, project IDs, cluster names or other instance identifiers. Refer to instances generically.
+  - Plain vCPU / GB, not GCP machine types or Cloud SQL tier names.
+  - Costs are estimates from Google list prices; say so.
+  - File and repo references are plain hyperlinks (new tab), no emojis. Do not link private repos.
+- After editing, render each changed slide and check nothing overlaps the footer before pushing.
