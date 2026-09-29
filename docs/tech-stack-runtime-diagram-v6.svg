@@ -26,7 +26,7 @@
   <!-- ===== arrows (drawn first, boxes on top) ===== -->
   <!-- Browser -> Frontend -->
   <polyline class="live" points="720,220 720,262 340,262 340,296" marker-end="url(#t)"/>
-  <text x="440" y="252" text-anchor="middle" class="lt">loads UI (HTML/JS)</text>
+  <text x="530" y="252" text-anchor="middle" class="lt">loads UI (HTML/JS)</text>
   <!-- Browser -> Backend -->
   <line class="live" x1="840" y1="220" x2="840" y2="296" marker-end="url(#t)"/>
   <text x="856" y="256" class="lt">API calls + get signed URL</text>
@@ -41,8 +41,8 @@
   <line class="job" x1="800" y1="414" x2="800" y2="506" marker-start="url(#o)" marker-end="url(#o)"/>
   <text x="816" y="466" class="lo">cache + queue jobs</text>
   <!-- Beat -> Redis -->
-  <line class="job" x1="500" y1="565" x2="646" y2="565" marker-end="url(#o)"/>
-  <text x="573" y="553" text-anchor="middle" class="lo">schedule jobs</text>
+  <polyline class="job" points="500,775 610,775 610,600 646,600" marker-end="url(#o)"/>
+  <text x="626" y="690" text-anchor="middle" class="lo" transform="rotate(-90 626 690)">schedule jobs</text>
   <!-- Redis -> Worker -->
   <line class="job" x1="800" y1="620" x2="800" y2="716" marker-end="url(#o)"/>
   <text x="816" y="674" class="lo">deliver jobs</text>
@@ -54,8 +54,8 @@
   <text x="1160" y="788" text-anchor="middle" class="lo">files</text>
 
   <!-- Backend -> Terminology server -->
-  <polyline class="live" points="646,395 575,395 575,165 504,165" marker-end="url(#t)"/>
-  <text x="591" y="330" text-anchor="middle" class="lt" transform="rotate(-90 591 330)">code lookups</text>
+  <polyline class="live" points="646,395 560,395 560,540 504,540" marker-end="url(#t)"/>
+  <text x="548" y="468" text-anchor="middle" class="lt" transform="rotate(-90 548 468)">code lookups</text>
 
   <!-- ===== boxes ===== -->
   <g>
@@ -78,10 +78,10 @@
     <text x="1280" y="368" text-anchor="middle" class="v">PostgreSQL 17</text>
     <text x="1280" y="392" text-anchor="middle" class="d">Patient + app records</text>
 
-    <rect x="180" y="510" width="320" height="110" rx="16" fill="#FDF4FF" stroke="#A21CAF" stroke-width="2.5"/>
-    <text x="340" y="550" text-anchor="middle" class="h">Celery Beat</text>
-    <text x="340" y="578" text-anchor="middle" class="v">Celery 5.6</text>
-    <text x="340" y="602" text-anchor="middle" class="d">Scheduler · 1 replica only</text>
+    <rect x="180" y="720" width="320" height="110" rx="16" fill="#FDF4FF" stroke="#A21CAF" stroke-width="2.5"/>
+    <text x="340" y="760" text-anchor="middle" class="h">Celery Beat</text>
+    <text x="340" y="788" text-anchor="middle" class="v">Celery 5.6</text>
+    <text x="340" y="812" text-anchor="middle" class="d">Scheduler · 1 replica only</text>
 
     <rect x="650" y="510" width="300" height="110" rx="16" fill="#FFF7ED" stroke="#EA580C" stroke-width="2.5"/>
     <text x="800" y="550" text-anchor="middle" class="h">Redis</text>
@@ -97,17 +97,17 @@
     <text x="800" y="760" text-anchor="middle" class="h">Celery Worker</text>
     <text x="800" y="788" text-anchor="middle" class="v">Celery 5.6</text>
     <text x="800" y="812" text-anchor="middle" class="d">Runs background jobs</text>
-    <rect x="180" y="110" width="320" height="110" rx="16" fill="#FFFFFF" stroke="#0F766E" stroke-width="2.5" stroke-dasharray="8 6"/>
-    <text x="340" y="150" text-anchor="middle" class="h">Terminology Server</text>
-    <text x="340" y="178" text-anchor="middle" class="v">Snowstorm · FHIR</text>
-    <text x="340" y="202" text-anchor="middle" class="d">SNOMED CT codes · hosted separately</text>
+    <rect x="180" y="510" width="320" height="110" rx="16" fill="#FFFFFF" stroke="#0F766E" stroke-width="2.5" stroke-dasharray="8 6"/>
+    <text x="340" y="550" text-anchor="middle" class="h">Terminology Server</text>
+    <text x="340" y="578" text-anchor="middle" class="v">Snowstorm · FHIR</text>
+    <text x="340" y="602" text-anchor="middle" class="d">SNOMED CT codes · hosted separately</text>
   </g>
 
   <!-- legend -->
-  <line class="live" x1="64" y1="740" x2="140" y2="740" marker-end="url(#t)"/>
-  <text x="156" y="746" class="lg">User request (live)</text>
-  <line class="job" x1="64" y1="780" x2="140" y2="780" marker-end="url(#o)"/>
-  <text x="156" y="786" class="lg">Background job</text>
+  <line class="live" x1="1320" y1="700" x2="1396" y2="700" marker-end="url(#t)"/>
+  <text x="1410" y="706" class="lg">User request</text>
+  <line class="job" x1="1320" y1="740" x2="1396" y2="740" marker-end="url(#o)"/>
+  <text x="1410" y="746" class="lg">Background job</text>
 
   <text x="64" y="866" class="note">CARE Frontend only serves static files — the browser calls CARE Backend directly. File bytes never pass through the backend: the API returns a pre-signed URL</text>
   <text x="64" y="888" class="note">and the browser uploads / downloads straight to storage. Beat also runs DB migrations on startup.</text>
