@@ -225,24 +225,16 @@ make deploy</pre>
   <div class="kicker">Hands-on · Local setup</div>
   <h1>Run CARE on your own machine</h1>
   <div class="grid g2">
-    <div class="card t"><h2>Steps</h2><pre class="cmd"># 1. Get the workshop repo + CARE sources
+    <div class="card t"><h2>Steps</h2><pre class="cmd"># One command: clone, build, start, verify, load demo data
 git clone --recurse-submodules --shallow-submodules \
-  https://github.com/egovhealthcare/care-session.git && cd care-session
+  https://github.com/egovhealthcare/care-session.git \
+  &amp;&amp; cd care-session &amp;&amp; ./run-care.sh --demo-data
 
-# 2. Build and start everything (config is committed)
-docker compose up -d --build --wait
+# Already cloned? Just run:
+./run-care.sh
 
-# 3. Check it works
-curl -f http://localhost:9000/ping/
-open http://localhost:4000
-
-# 4. Load demo data (synthetic, local only)
-docker compose exec backend python -m pip install \
-  --target /tmp/care-fixtures-deps 'Faker==38.2.0'
-docker compose exec -e PYTHONPATH=/tmp/care-fixtures-deps \
-  -e 'DJANGO_ALLOWED_HOSTS=["localhost","127.0.0.1","backend","testserver"]' \
-  backend python manage.py load_fixtures</pre></div>
-    <div class="card"><h2>What you get</h2><ul><li>Needs only Docker with Compose</li><li>7 services: frontend, backend, worker, beat, PostgreSQL, Redis, local S3 storage</li><li>Beat runs database migrations first, then backend and worker start</li><li>Frontend on <code>localhost:4000</code>, API on <code>localhost:9000</code></li><li>Demo data is fake — never load fixtures on a real instance</li><li>Stop with <code>docker compose down</code> — your data is kept</li><li>Full guide: <a href="https://github.com/egovhealthcare/care-session#readme" target="_blank" rel="noopener">care-session README</a></li></ul></div>
+# Then open http://localhost:4000</pre></div>
+    <div class="card"><h2>What you get</h2><ul><li>Needs only Git and Docker with Compose</li><li><a href="https://github.com/egovhealthcare/care-session/blob/main/run-care.sh" target="_blank" rel="noopener"><code>run-care.sh</code></a> checks Docker, builds, starts and health-checks everything; safe to re-run</li><li>7 services: frontend, backend, worker, beat, PostgreSQL, Redis, local S3 storage</li><li>Beat runs database migrations first, then backend and worker start</li><li>Frontend on <code>localhost:4000</code>, API on <code>localhost:9000</code></li><li>Demo data is fake — never load fixtures on a real instance</li><li>Stop with <code>docker compose down</code> — your data is kept</li><li>Full guide: <a href="https://github.com/egovhealthcare/care-session#readme" target="_blank" rel="noopener">care-session README</a></li></ul></div>
   </div>
 </section>
 

@@ -58,6 +58,16 @@ This is the central deployment concept: one tested application artifact can run 
 - At least 8 GB of free memory recommended
 - Free ports: `4000`, `9000`, `9001`, and `9100`
 
+## Quick start (one command)
+
+```bash
+git clone --recurse-submodules --shallow-submodules \
+  https://github.com/egovhealthcare/care-session.git \
+  && cd care-session && ./run-care.sh --demo-data
+```
+
+[`run-care.sh`](run-care.sh) checks Docker, fetches the CARE submodules if missing, validates `compose.yaml`, runs `docker compose up -d --build --wait`, verifies the backend, frontend and Django checks, and (with `--demo-data`) loads synthetic fixtures. It is safe to re-run and never deletes data. Omit `--demo-data` for an empty instance. The steps below are what the script does, for learning or troubleshooting.
+
 ## 1. Clone this repository with the CARE sources
 
 ```bash

@@ -20,6 +20,7 @@ This repository is a training environment for running CARE locally with Docker C
 ```text
 care-session/
 ├── compose.yaml
+├── run-care.sh       # one-step start: preflight, build, up --wait, verify, optional --demo-data
 ├── .env.example
 ├── frontend.env.production.local
 ├── docs/                 # workshop docs + the Session 3 deck (GitHub Pages root)
@@ -66,6 +67,8 @@ The service list must contain exactly these runtime roles:
 - `frontend`
 
 ## Build and start
+
+`./run-care.sh` runs the preflight, build, start and verify steps below in one go (`--demo-data` also loads fixtures). Keep it in sync with these steps.
 
 ```bash
 docker compose up -d --build --wait
