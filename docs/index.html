@@ -179,9 +179,12 @@ make deploy</pre>
 <section class="slide">
   <div class="kicker">Infra requirements · Sizing &amp; cost</div>
   <h1>District vs statewide: planning values</h1>
-  <table class="compact"><tr><th>Parameter</th><th>District level HMIS</th><th>Statewide HMIS</th></tr><tr><td><b>Users</b></td><td>&lt; 5,000 daily active</td><td>1,30,000 accounts</td></tr><tr><td><b>Patient registry</b></td><td>26 lakh</td><td>7 crore</td></tr><tr><td><b>Encounters / day</b></td><td>20,000 (OP + IP)</td><td>7,10,000 (OP 6 L · IP 80 K · MTM 30 K)</td></tr><tr><td><b>API requests / day</b></td><td>3 million</td><td>85.2 million (~120 per encounter)</td></tr><tr><td><b>Average load</b></td><td>~30 RPS</td><td>~986 RPS</td></tr><tr><td><b>Peak design load (5× average)</b></td><td>~140 RPS</td><td>~5,000 RPS</td></tr><tr><td><b>Availability zones</b></td><td>2</td><td>3</td></tr></table>
-  <div class="note" style="margin-top:16px"><b>Method:</b> encounters × requests per encounter → requests per day → average RPS → size for 5× the average (daytime peak + zone failover headroom).</div>
-  <p class="src">Planning inputs for sizing, not measured values.</p>
+  <div class="grid g2" style="align-items:start">
+    <div><h2 style="margin:0 0 8px">Workload</h2><table class="compact"><tr><th></th><th>District</th><th>Statewide</th></tr><tr><td><b>Users</b></td><td>20,000 accounts · &lt;5,000 active/day</td><td>1,30,000 accounts</td></tr><tr><td><b>Patient registry</b></td><td>26 lakh</td><td>7 crore</td></tr><tr><td><b>Encounters / day</b></td><td>20,000 (OP + IP)</td><td>7,10,000 (OP · IP · MTM)</td></tr><tr><td><b>API requests / day</b></td><td>3 million</td><td>85.2 million</td></tr><tr><td><b>Average load</b></td><td>~35 RPS</td><td>~986 RPS</td></tr><tr><td><b>Peak design (5×)</b></td><td>~175 RPS</td><td>~5,000 RPS</td></tr></table></div>
+    <div><h2 style="margin:0 0 8px">What it runs on</h2><table class="compact"><tr><th></th><th>District</th><th>Statewide</th></tr><tr><td><b>App, workers, Metabase</b></td><td>11 vCPU · 22 GB<br>API 6–12 copies</td><td>130 vCPU · 260 GB</td></tr><tr><td><b>PostgreSQL</b></td><td>Primary + replica, 2 vCPU · 16 GB each · 520 GB</td><td>Primary 64 vCPU · 512 GB + replica 32 vCPU · 256 GB · 4 TB</td></tr><tr><td><b>Redis cache</b></td><td>2 nodes</td><td>3 nodes</td></tr><tr><td><b>Terminology server</b></td><td>1 index node + 2 workers</td><td>3 index nodes + 8 workers</td></tr><tr><td><b>File storage</b></td><td>500 GB</td><td>5 TB</td></tr><tr><td><b>Availability zones</b></td><td>2</td><td>3</td></tr><tr><td><b>Est. cost / month</b></td><td>~$2,200 · ₹2.1 L</td><td>~$26,800 · ₹25.9 L</td></tr></table></div>
+  </div>
+  <div class="note" style="margin-top:14px"><b>Method:</b> encounters × ~120 API requests → requests/day ÷ 86,400 → average RPS → size for 5× (daytime peak + zone failover). The database is the biggest cost at both sizes.</div>
+  <p class="src">Planning inputs, not measured values. Cost breakdown on the next slide.</p>
 </section>
 
 <section class="slide">
