@@ -20,6 +20,7 @@ This repository is a training environment for running CARE locally with Docker C
 ```text
 care-session/
 ├── compose.yaml
+├── get-care.sh       # bootstrap: clone (or update) the repo, then exec run-care.sh
 ├── run-care.sh       # one-step start: preflight, build, up --wait, verify, optional --demo-data
 ├── .env.example
 ├── frontend.env.production.local

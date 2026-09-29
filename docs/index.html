@@ -225,7 +225,11 @@ make deploy</pre>
   <div class="kicker">Hands-on · Local setup</div>
   <h1>Run CARE on your own machine</h1>
   <div class="grid g2">
-    <div class="card t"><h2>Steps</h2><pre class="cmd"># One command: clone, build, start, verify, load demo data
+    <div class="card t"><h2>Steps</h2><pre class="cmd"># One command: clone, build, start, load demo data
+curl -fsSL https://raw.githubusercontent.com/egovhealthcare/care-session/main/get-care.sh \
+  | bash -s -- --demo-data
+
+# Or clone yourself
 git clone --recurse-submodules --shallow-submodules \
   https://github.com/egovhealthcare/care-session.git \
   &amp;&amp; cd care-session &amp;&amp; ./run-care.sh --demo-data

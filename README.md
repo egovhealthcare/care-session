@@ -60,6 +60,14 @@ This is the central deployment concept: one tested application artifact can run 
 
 ## Quick start (one command)
 
+Nothing cloned yet? This clones the repo into `./care-session` and starts CARE:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/egovhealthcare/care-session/main/get-care.sh | bash -s -- --demo-data
+```
+
+[`get-care.sh`](get-care.sh) updates an existing `./care-session` instead of re-cloning (`CARE_DIR=/path` to change the location), then hands off to `run-care.sh`. Or do the same by hand:
+
 ```bash
 git clone --recurse-submodules --shallow-submodules \
   https://github.com/egovhealthcare/care-session.git \
