@@ -151,10 +151,10 @@ Expected endpoints:
 
 | Endpoint | URL |
 |---|---|
-| CARE frontend | http://localhost:4000 |
-| Backend health | http://localhost:9000/ping/ |
-| API documentation | http://localhost:9000/swagger/ |
-| Silo object-storage console | http://localhost:9001 |
+| CARE frontend | <http://localhost:4000> |
+| Backend health | <http://localhost:9000/ping/> |
+| API documentation | <http://localhost:9000/swagger/> |
+| Silo object-storage console | <http://localhost:9001> |
 
 ## 7. Load synthetic workshop data
 
