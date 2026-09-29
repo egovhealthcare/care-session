@@ -11,7 +11,7 @@ This repository is a training environment for running CARE locally with Docker C
 - Never connect this stack to production databases, buckets, Redis instances, APIs, or credentials.
 - Never read, print, commit, or overwrite a user's existing `.env`.
 - Never run `docker compose down -v` unless the user explicitly requests deletion of local data.
-- Do not commit the cloned `care/` or `care_fe/` repositories.
+- `care/` and `care_fe/` are Git submodules tracking upstream `develop`. Do not commit changes inside them; only bump the pinned commit deliberately (`git submodule update --remote`, then commit the new pointer).
 - Keep `deploy-states-sample/` synthetic: fake project IDs, domains, accounts and secrets only. Never copy real values from `auto-deploy-states` or any live environment.
 - Do not add a separate migration or init service. The current CARE `celery_beat.sh` performs migrations and synchronization before starting Beat.
 
@@ -24,8 +24,8 @@ care-session/
 ├── frontend.env.production.local
 ├── docs/                 # workshop docs + the Session 3 deck (GitHub Pages root)
 ├── deploy-states-sample/ # synthetic copy of the auto-deploy-states layout and workflows
-├── care/       # cloned from ohcnetwork/care develop
-└── care_fe/    # cloned from ohcnetwork/care_fe develop
+├── care/       # submodule: ohcnetwork/care develop
+└── care_fe/    # submodule: ohcnetwork/care_fe develop
 ```
 
 ## Preflight
@@ -40,11 +40,10 @@ test -d care/.git
 test -d care_fe/.git
 ```
 
-If either source repository is missing, clone it:
+If either source directory is empty, initialise the submodules:
 
 ```bash
-git clone --depth 1 --branch develop https://github.com/ohcnetwork/care.git
-git clone --depth 1 --branch develop https://github.com/ohcnetwork/care_fe.git
+git submodule update --init --depth 1
 ```
 
 If `.env` is missing, create it without overwriting an existing file:

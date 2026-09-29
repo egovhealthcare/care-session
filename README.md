@@ -58,21 +58,29 @@ This is the central deployment concept: one tested application artifact can run 
 - At least 8 GB of free memory recommended
 - Free ports: `4000`, `9000`, `9001`, and `9100`
 
-## 1. Clone this repository
+## 1. Clone this repository with the CARE sources
 
 ```bash
-git clone https://github.com/egovhealthcare/care-session.git
+git clone --recurse-submodules --shallow-submodules \
+  https://github.com/egovhealthcare/care-session.git
 cd care-session
 ```
 
-## 2. Clone CARE source repositories
+`care/` and `care_fe/` are Git submodules pinned to a tested commit of the upstream `develop` branches ([ohcnetwork/care](https://github.com/ohcnetwork/care), [ohcnetwork/care_fe](https://github.com/ohcnetwork/care_fe)). Participants can see exactly which upstream source is being built.
+
+Already cloned without submodules:
 
 ```bash
-git clone --depth 1 --branch develop https://github.com/ohcnetwork/care.git
-git clone --depth 1 --branch develop https://github.com/ohcnetwork/care_fe.git
+git submodule update --init --depth 1
 ```
 
-The source directories are intentionally excluded from this repository. Participants can see exactly which upstream source is being built.
+## 2. Update the CARE sources (optional)
+
+To build the latest upstream `develop` instead of the pinned commit:
+
+```bash
+git submodule update --remote --depth 1
+```
 
 ## 3. Create local configuration
 

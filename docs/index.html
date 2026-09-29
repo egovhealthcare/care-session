@@ -226,9 +226,8 @@ make deploy</pre>
   <h1>Run CARE on your own machine</h1>
   <div class="grid g2">
     <div class="card t"><h2>Steps</h2><pre class="cmd"># 1. Get the workshop repo + CARE sources
-git clone https://github.com/egovhealthcare/care-session.git && cd care-session
-git clone --depth 1 -b develop https://github.com/ohcnetwork/care.git
-git clone --depth 1 -b develop https://github.com/ohcnetwork/care_fe.git
+git clone --recurse-submodules --shallow-submodules \
+  https://github.com/egovhealthcare/care-session.git && cd care-session
 
 # 2. Local config (never overwrite an existing .env)
 test -f .env || cp .env.example .env

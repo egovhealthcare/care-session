@@ -1,0 +1,12 @@
+[submodule "care"]
+	path = care
+	url = https://github.com/ohcnetwork/care.git
+	branch = develop
+	shallow = true
+	ignore = dirty
+[submodule "care_fe"]
+	path = care_fe
+	url = https://github.com/ohcnetwork/care_fe.git
+	branch = develop
+	shallow = true
+	ignore = dirty

@@ -7,7 +7,7 @@ Use this alongside the [operator worksheet](operator-worksheet.md). Record comma
 - [ ] Docker daemon is running.
 - [ ] Docker Compose v2 is available.
 - [ ] Required ports are free.
-- [ ] Both CARE repositories are cloned from the intended branch.
+- [ ] Both CARE submodules are initialised at the intended commit (`git submodule status`).
 - [ ] `.env` was copied from `.env.example`.
 - [ ] Frontend local API configuration was copied into `care_fe`.
 - [ ] `docker compose config` succeeds.

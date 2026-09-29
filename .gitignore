@@ -1,6 +1,6 @@
 .env
-care/
-care_fe/
 care-backups/
+# build config generated when the sample was run locally; previously hidden by the care/ pattern
+deploy-states-sample/env/*/build/
 .DS_Store
 *.log
