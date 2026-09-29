@@ -177,6 +177,16 @@ make deploy</pre>
 
 <!-- 9 -->
 <section class="slide">
+  <div class="kicker">Infra requirements · Sizing &amp; cost</div>
+  <h1>Statewide HMIS: planning values</h1>
+  <div class="grid g2" style="align-items:start">
+    <div><h2 style="margin:0 0 8px">Workload</h3><table class="compact"><tr><th>Parameter</th><th>Planning value</th><th>Basis</th></tr><tr><td><b>User accounts</b></td><td>1,30,000</td><td>Concurrency follows facility hours and encounters</td></tr><tr><td><b>Registry capacity</b></td><td>7,00,00,000 patients</td><td>Maximum patient registry size</td></tr><tr><td><b>Daily OP encounters</b></td><td>6,00,000</td><td>Outpatient load on API, DB, reports</td></tr><tr><td><b>Daily IP encounters</b></td><td>80,000</td><td>Inpatient, same database and app tier</td></tr><tr><td><b>Daily MTM encounters</b></td><td>30,000</td><td>Field / community care</td></tr><tr><td><b>Total encounters</b></td><td>7,10,000 / day</td><td>~25.9 crore per year</td></tr></table></div>
+    <div><h2 style="margin:0 0 8px">Throughput &amp; platform</h3><table class="compact"><tr><th>Parameter</th><th>Planning value</th><th>Basis</th></tr><tr><td><b>Dynamic API requests</b></td><td>85.2 M / day</td><td>~120 requests per encounter</td></tr><tr><td><b>Average throughput</b></td><td>~986 RPS</td><td>85.2 M spread over a day</td></tr><tr><td><b>Peak design throughput</b></td><td>~5,000 RPS</td><td>5× average: daytime peak + failover headroom</td></tr><tr><td><b>Availability</b></td><td>3 zones</td><td>App, cache and network spread across zones</td></tr><tr><td><b>Database</b></td><td>Managed PostgreSQL, I/O-optimised</td><td>Predictable cost at high read/write volume</td></tr><tr><td><b>Pricing</b></td><td>Public on-demand, USD</td><td>730 h/month, no commitment discount; INR 96.539 / USD</td></tr></table></div>
+  </div>
+  <p class="src">Planning inputs for a large statewide deployment, not measured values. Costs from public list prices; your actual bill will vary.</p>
+</section>
+
+<section class="slide">
   <div class="kicker">Scoping &amp; provisioning</div>
   <h1>Autoscaling with HPA</h1>
   <p class="lead" style="margin-bottom:28px;color:var(--muted);max-width:1100px">Autoscaling is a built-in Kubernetes feature (Horizontal Pod Autoscaler). We use it to add or remove CARE backend and worker copies automatically based on usage. The defaults are a starting point — tune the min/max copies and the scaling trigger to match how your users actually use CARE.</p>
