@@ -148,7 +148,7 @@ make deploy</pre>
     <div class="card t"><h2>PostgreSQL</h2><p>Primary DB (+ read replica on GCP). Required.</p></div>
     <div class="card t"><h2>Redis + Storage</h2><p>Broker/cache and file store. Required.</p></div>
     <div class="card"><h2>Metabase</h2><p>Analytics dashboards, own metadata DB. Optional.</p></div>
-    <div class="card"><h2>AI engine</h2><p>Works with any OpenAI-compatible model endpoint. On GCP deployments we use <a href="https://github.com/egovhealthcare/gcp_template/blob/HEAD/infra/scribe.tf" target="_blank" rel="noopener">Vertex AI</a> with models hosted in India. Optional.</p></div>
+    <div class="card"><h2>AI provider</h2><p>Works with any OpenAI-compatible model endpoint. On GCP deployments we use <a href="https://github.com/egovhealthcare/gcp_template/blob/HEAD/infra/scribe.tf" target="_blank" rel="noopener">Vertex AI</a> with models hosted in India. Optional.</p></div>
     <div class="card"><h2>DICOM</h2><p><a href="https://github.com/egovhealthcare/gcp_template/tree/HEAD/helm_charts/dcm4chee" target="_blank" rel="noopener"><code>dcm4chee</code></a> stores medical images (X-ray, CT, MRI) and lets clinicians view them in the browser. Optional.</p></div>
     <div class="card"><h2>Plugs</h2><p>Django apps that add features to CARE without changing core code. Optional.</p><p>Sample: <a href="https://github.com/ohcnetwork/care_hello" target="_blank" rel="noopener">care_hello</a> · Enable: <a href="https://github.com/ohcnetwork/care/blob/develop/docs/development/pluggable-apps.md" target="_blank" rel="noopener">pluggable apps guide</a></p></div>
   </div>
