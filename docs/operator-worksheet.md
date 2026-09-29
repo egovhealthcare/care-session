@@ -20,7 +20,7 @@ The frontend and the three backend process roles use **two CARE images**. The la
 
 | Check | Command or action | Result / evidence | Status (pass / fail / unknown) |
 |---|---|---|---|
-| Source and configuration | Clone the two upstream repositories; copy local examples without overwriting an existing `.env` | | |
+| Source and configuration | Clone the two upstream repositories; committed defaults are used directly; optional overrides go in a git-ignored `.env` | | |
 | Compose model | `docker compose config --quiet` and `docker compose config --services` | | |
 | Start | `docker compose up -d --build --wait` | | |
 | Dependencies and Beat | `docker compose ps -a` | | |

@@ -82,12 +82,14 @@ To build the latest upstream `develop` instead of the pinned commit:
 git submodule update --remote --depth 1
 ```
 
-## 3. Create local configuration
+## 3. Local configuration (nothing to copy)
 
-```bash
-test -f .env || cp .env.example .env
-cp frontend.env.production.local care_fe/.env.production.local
-```
+The workshop defaults are committed and used directly:
+
+- `.env.example` — backend, worker and Beat settings. Compose loads it automatically.
+- `frontend.env.production.local` — frontend build settings. The frontend build copies it into the image, so no file is written into `care_fe/`.
+
+To change a backend value for your machine only, create a `.env` with just the keys you want to override. It is loaded after `.env.example` and is git-ignored. Rebuild the frontend after editing `frontend.env.production.local`.
 
 The frontend setting points the participant's browser to `http://localhost:9000`. Container-to-container dependencies use Compose service names such as `db`, `redis`, and `silo`.
 

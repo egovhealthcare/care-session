@@ -66,7 +66,7 @@ The frontend Dockerfile has two stages:
 1. Node installs dependencies and runs the frontend build.
 2. The final Nginx stage copies and serves the generated HTML, JavaScript, and CSS.
 
-The build reads values from `care_fe/.env.production.local`. `REACT_CARE_API_URL` must be the URL reachable by the participant's browser. In the workshop it is `http://localhost:9000`; an internal Compose hostname would not work in the browser.
+The build reads values from `frontend.env.production.local`, which the frontend build copies into the image. `REACT_CARE_API_URL` must be the URL reachable by the participant's browser. In the workshop it is `http://localhost:9000`; an internal Compose hostname would not work in the browser.
 
 A frontend build-variable change requires a new frontend image.
 

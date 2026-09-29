@@ -46,17 +46,7 @@ If either source directory is empty, initialise the submodules:
 git submodule update --init --depth 1
 ```
 
-If `.env` is missing, create it without overwriting an existing file:
-
-```bash
-test -f .env || cp .env.example .env
-```
-
-Configure the frontend build:
-
-```bash
-cp frontend.env.production.local care_fe/.env.production.local
-```
+No configuration files need to be copied. Compose loads `.env.example` for the backend roles, then an optional git-ignored `.env` with local overrides. The frontend build (`dockerfile_inline` in `compose.yaml`, mirroring `care_fe/Dockerfile`) copies `frontend.env.production.local` into the image. Keep the inline Dockerfile in sync when upstream `care_fe/Dockerfile` changes.
 
 ## Validate before starting
 
