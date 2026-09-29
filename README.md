@@ -61,7 +61,7 @@ This is the central deployment concept: one tested application artifact can run 
 ## 1. Clone this repository
 
 ```bash
-git clone https://github.com/jesbinjoseph/care-session.git
+git clone https://github.com/egovhealthcare/care-session.git
 cd care-session
 ```
 
@@ -249,12 +249,12 @@ This repository is a learning environment, not a production deployment template.
 
 ## Presentation
 
-The Session 3 deck is published with GitHub Pages at <https://jesbinjoseph.github.io/care-session/> (source: [docs/index.html](docs/index.html)). Use `#N` to jump to a slide. Pages serves the `docs/` folder on `main`, so pushing is the only deploy step.
+The Session 3 deck is published with GitHub Pages at <https://egovhealthcare.github.io/care-session/> (source: [docs/index.html](docs/index.html)). Use `#N` to jump to a slide. Pages serves the `docs/` folder on `main`, so pushing is the only deploy step.
 
 ## Additional material
 
 - [Operator worksheet](docs/operator-worksheet.md)
-- [Session 3 presentation](https://jesbinjoseph.github.io/care-session/)
+- [Session 3 presentation](https://egovhealthcare.github.io/care-session/)
 - [Architecture explanation](docs/architecture.md)
 - [CARE on a simple Kubernetes cluster](docs/kubernetes-local-architecture.md)
 - [Recommended managed-services GCP architecture](docs/gcp-managed-architecture.md)

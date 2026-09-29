@@ -203,7 +203,7 @@ make deploy</pre>
   <h1>Staging: configure, test, train</h1>
   <div class="grid g2">
     <div class="card t"><h2>Where everything happens first</h2><p style="margin:0 0 8px">Every change lands on staging first, then production — so no surprises in production.</p><ul><li>Dedicated GCP project with the full <a href="https://github.com/egovhealthcare/gcp_template" target="_blank" rel="noopener">gcp_template</a> stack</li><li>Builds from the <code>develop</code> ref of <a href="https://github.com/ohcnetwork/care" target="_blank" rel="noopener"><code>care</code></a> / <a href="https://github.com/ohcnetwork/care_fe" target="_blank" rel="noopener"><code>care_fe</code></a></li><li>New plugs, value sets, roles and config tested here</li><li>Training runs on staging, never production</li></ul></div>
-    <div class="card"><h2>How the <a href="https://github.com/jesbinjoseph/care-session/blob/main/deploy-states-sample/README.md" target="_blank" rel="noopener">deploy-states-sample</a> pipeline works</h2><ol><li><a href="https://github.com/jesbinjoseph/care-session/blob/main/deploy-states-sample/.github/workflows/build.yaml" target="_blank" rel="noopener">Build</a>: build <code>care</code> and <code>care_fe</code> images from the chosen commit, push to Artifact Registry</li><li><a href="https://github.com/jesbinjoseph/care-session/blob/main/deploy-states-sample/.github/workflows/deploy.yaml" target="_blank" rel="noopener">Deploy</a>: pick the environment and image tags</li><li>Check the images exist, else stop</li><li>Write the new tags into the environment's config (Secret Manager)</li><li>Run OpenTofu plan and open a GitHub issue with the plan</li><li>Wait for an approver to comment <code>approved</code> (or <code>denied</code>, or time out)</li><li>On approval, apply — the new version goes live</li></ol></div>
+    <div class="card"><h2>How the <a href="https://github.com/egovhealthcare/care-session/blob/main/deploy-states-sample/README.md" target="_blank" rel="noopener">deploy-states-sample</a> pipeline works</h2><ol><li><a href="https://github.com/egovhealthcare/care-session/blob/main/deploy-states-sample/.github/workflows/build.yaml" target="_blank" rel="noopener">Build</a>: build <code>care</code> and <code>care_fe</code> images from the chosen commit, push to Artifact Registry</li><li><a href="https://github.com/egovhealthcare/care-session/blob/main/deploy-states-sample/.github/workflows/deploy.yaml" target="_blank" rel="noopener">Deploy</a>: pick the environment and image tags</li><li>Check the images exist, else stop</li><li>Write the new tags into the environment's config (Secret Manager)</li><li>Run OpenTofu plan and open a GitHub issue with the plan</li><li>Wait for an approver to comment <code>approved</code> (or <code>denied</code>, or time out)</li><li>On approval, apply — the new version goes live</li></ol></div>
   </div>
   <div class="flow" style="margin-top:22px">
     <div class="step">Edit env config<small>PR to deploy-states-sample</small></div><div class="arr">→</div>
@@ -230,7 +230,7 @@ make deploy</pre>
   <h1>Run CARE on your own machine</h1>
   <div class="grid g2">
     <div class="card t"><h2>Steps</h2><pre class="cmd"># 1. Get the workshop repo + CARE sources
-git clone https://github.com/jesbinjoseph/care-session.git && cd care-session
+git clone https://github.com/egovhealthcare/care-session.git && cd care-session
 git clone --depth 1 -b develop https://github.com/ohcnetwork/care.git
 git clone --depth 1 -b develop https://github.com/ohcnetwork/care_fe.git
 
@@ -251,14 +251,14 @@ docker compose exec backend python -m pip install \
 docker compose exec -e PYTHONPATH=/tmp/care-fixtures-deps \
   -e 'DJANGO_ALLOWED_HOSTS=["localhost","127.0.0.1","backend","testserver"]' \
   backend python manage.py load_fixtures</pre></div>
-    <div class="card"><h2>What you get</h2><ul><li>Needs only Docker with Compose</li><li>7 services: frontend, backend, worker, beat, PostgreSQL, Redis, local S3 storage</li><li>Beat runs database migrations first, then backend and worker start</li><li>Frontend on <code>localhost:4000</code>, API on <code>localhost:9000</code></li><li>Demo data is fake — never load fixtures on a real instance</li><li>Stop with <code>docker compose down</code> — your data is kept</li><li>Full guide: <a href="https://github.com/jesbinjoseph/care-session#readme" target="_blank" rel="noopener">care-session README</a></li></ul></div>
+    <div class="card"><h2>What you get</h2><ul><li>Needs only Docker with Compose</li><li>7 services: frontend, backend, worker, beat, PostgreSQL, Redis, local S3 storage</li><li>Beat runs database migrations first, then backend and worker start</li><li>Frontend on <code>localhost:4000</code>, API on <code>localhost:9000</code></li><li>Demo data is fake — never load fixtures on a real instance</li><li>Stop with <code>docker compose down</code> — your data is kept</li><li>Full guide: <a href="https://github.com/egovhealthcare/care-session#readme" target="_blank" rel="noopener">care-session README</a></li></ul></div>
   </div>
 </section>
 
 <!-- 15 -->
 <section class="slide cover">
   <div class="l"><div class="kicker">Recap</div><h1>Start small, scale on signals</h1></div>
-  <div class="r"><ul><li><a href="https://github.com/ohcnetwork/care" target="_blank" rel="noopener">github.com/ohcnetwork/care</a></li><li><a href="https://github.com/ohcnetwork/care_fe" target="_blank" rel="noopener">github.com/ohcnetwork/care_fe</a></li><li><a href="https://github.com/egovhealthcare/gcp_template" target="_blank" rel="noopener">github.com/egovhealthcare/gcp_template</a></li><li><a href="https://github.com/jesbinjoseph/care-session/blob/main/deploy-states-sample/README.md" target="_blank" rel="noopener">care-session/deploy-states-sample</a></li></ul></div>
+  <div class="r"><ul><li><a href="https://github.com/ohcnetwork/care" target="_blank" rel="noopener">github.com/ohcnetwork/care</a></li><li><a href="https://github.com/ohcnetwork/care_fe" target="_blank" rel="noopener">github.com/ohcnetwork/care_fe</a></li><li><a href="https://github.com/egovhealthcare/gcp_template" target="_blank" rel="noopener">github.com/egovhealthcare/gcp_template</a></li><li><a href="https://github.com/egovhealthcare/care-session/blob/main/deploy-states-sample/README.md" target="_blank" rel="noopener">care-session/deploy-states-sample</a></li></ul></div>
 </section>
 
 </div>

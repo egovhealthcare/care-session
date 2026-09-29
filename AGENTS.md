@@ -175,7 +175,7 @@ When changing a component or startup dependency, update all of:
 
 ## Presentation
 
-The CARE Fundamentals Webinar Series · Session 3 deck is a single file, `docs/index.html`, published by GitHub Pages from `main` / `docs` at <https://jesbinjoseph.github.io/care-session/>. There is no build step and no Actions workflow: pushing to `main` deploys it. `#N` jumps to slide N.
+The CARE Fundamentals Webinar Series · Session 3 deck is a single file, `docs/index.html`, published by GitHub Pages from `main` / `docs` at <https://egovhealthcare.github.io/care-session/>. There is no build step and no Actions workflow: pushing to `main` deploys it. `#N` jumps to slide N.
 
 - `docs/infra-session.html` is a redirect for the old URL. Keep it.
 - Images it uses: `docs/tech-stack-runtime-diagram-v6.svg` (and `.png` export) and `docs/celery-worker-hpa-sample.png`. Remove old diagram versions instead of keeping drafts.
